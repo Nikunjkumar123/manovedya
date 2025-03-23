@@ -1,9 +1,9 @@
-import Nodemailer from 'nodemailer';
+import Nodemailer from "nodemailer";
 
 const sendOtpPartnerSignUp = async (data) => {
-    const { email, otp } = data;
-    console.log('email', email, 'otp', otp)
-    const body = `
+  const { email, otp } = data;
+  console.log("email", email, "otp", otp);
+  const body = `
   <!DOCTYPE html>
 <html lang="en">
 
@@ -81,7 +81,7 @@ const sendOtpPartnerSignUp = async (data) => {
     <div style="margin: 0 auto">
         <div class="container">
             <div class="logo">
-               <img src="http://localhost:5000/uploads/logo-image/GABOTEC%20LOGO.png" style="width: 180px;"
+               <img src="https://api.manovaidya.com/uploads/logo-image/GABOTEC%20LOGO.png" style="width: 180px;"
                     alt="Manodaidya Logo">
             </div>
             <div class="title">Verify your Email</div>
@@ -97,20 +97,20 @@ const sendOtpPartnerSignUp = async (data) => {
     </div>
 </body>
 </html>
-  `
-    const subject = "Verify your Email";
-    return await sendMail({ to: email, subject, html: body });
+  `;
+  const subject = "Verify your Email";
+  return await sendMail({ to: email, subject, html: body });
 };
 
 const sendResetPassword = async (data) => {
-    const { email, token, user } = data;
-    // ADMIN_BASE_URL
-    console.log('token_data:==',email, token)
-    const baseUrl = user === 'admin' ? process.env.ADMIN_BASE_URL : process.env.BASE_URL
-    const resetLink =
-        baseUrl + `/Pages/reset-password/${token}`;
+  const { email, token, user } = data;
+  // ADMIN_BASE_URL
+  console.log("token_data:==", email, token);
+  const baseUrl =
+    user === "admin" ? process.env.ADMIN_BASE_URL : process.env.BASE_URL;
+  const resetLink = baseUrl + `/Pages/reset-password/${token}`;
 
-    const body = `
+  const body = `
     <!DOCTYPE html>
   <html lang="en">
   
@@ -188,7 +188,7 @@ const sendResetPassword = async (data) => {
       <div style="margin: 0 auto">
           <div class="container">
               <div class="logo">
-                  <img src="http://localhost:5000/uploads/logos/logo.png" style="width: 180px;">
+                  <img src="https://api.manovaidya.com/uploads/logos/logo.png" style="width: 180px;">
               </div>
               <div class="title">Reset Password</div>
               <hr style="opacity: 30%; margin-top: 3%; margin-bottom: 3%;" />
@@ -204,16 +204,16 @@ const sendResetPassword = async (data) => {
   </body>
   
   </html>
-    `
+    `;
 
-    const subject = "Reset your Password";
-    return await sendMail({ to: email, subject, html: body });
+  const subject = "Reset your Password";
+  return await sendMail({ to: email, subject, html: body });
 };
 
 const sendEmailUpdateOtp = async (data) => {
-    const { name, otp, email } = data;
+  const { name, otp, email } = data;
 
-    const body = `
+  const body = `
   <!DOCTYPE html>
 <html lang="en">
 
@@ -291,7 +291,7 @@ const sendEmailUpdateOtp = async (data) => {
     <div style="margin: 0 auto">
         <div class="container">
             <div class="logo">
-                <img src="http://localhost:5000/uploads/logos/logo.png" style="width: 180px;"
+                <img src="https://api.manovaidya.com/uploads/logos/logo.png" style="width: 180px;"
                     alt="Oredo GPS Logo">
             </div>
             <div class="title">Verify your New Email</div>
@@ -309,16 +309,25 @@ const sendEmailUpdateOtp = async (data) => {
 </body>
 
 </html>
-  `
+  `;
 
-    const subject = "Verify your Email";
-    return await sendMail({ to: email, subject, html: body });
+  const subject = "Verify your Email";
+  return await sendMail({ to: email, subject, html: body });
 };
 
 const sendThankYouForBookingConsultation = async (data) => {
-    const { patientName, concernChallenge, email, phone, scheduleCalendar, scheduleTime, chooseDoctor, payment_id } = data;
+  const {
+    patientName,
+    concernChallenge,
+    email,
+    phone,
+    scheduleCalendar,
+    scheduleTime,
+    chooseDoctor,
+    payment_id,
+  } = data;
 
-    const body = `
+  const body = `
   <!DOCTYPE html>
 <html lang="en">
 
@@ -415,7 +424,7 @@ const sendThankYouForBookingConsultation = async (data) => {
 
     <div class="container">
         <div class="header">
-            <img src="http://localhost:5000/uploads/logos/logo.png" alt="Gabotec Logo">
+            <img src="https://api.manovaidya.com/uploads/logos/logo.png" alt="Gabotec Logo">
             <h2 class="title">Thank You for Booking a Consultation!</h2>
         </div>
 
@@ -435,7 +444,7 @@ const sendThankYouForBookingConsultation = async (data) => {
             <p>Please ensure to arrive at least 10 minutes before your scheduled time. If you need to reschedule or have any questions, feel free to contact us.</p>
         </div>
 
-        // <a href="http://localhost:5000/appointments" class="cta-button">Manage Your Appointment</a>
+        // <a href="https://api.manovaidya.com/appointments" class="cta-button">Manage Your Appointment</a>
 
         // <div class="footer">
         //     <p>All rights reserved © 2024  | 6-67, Yerrakunta, Chandrayangutta, Hyderabad, Telangana 500005</p>
@@ -447,36 +456,41 @@ const sendThankYouForBookingConsultation = async (data) => {
 
 </html>
   `;
-    const subject = "Thank You for Booking Consultation";
-    return await sendMail({ to: email, subject, html: body });
+  const subject = "Thank You for Booking Consultation";
+  return await sendMail({ to: email, subject, html: body });
 };
 
 const transporter = Nodemailer.createTransport({
-    host: "smtp.hostinger.com", // Replace with your SMTP server host
-    port: 465, // Replace with your SMTP server port
-    secure: true, // true for 465, false for other ports
-    auth: {
-        user: "info@gromedia.co.in", // Replace with your SMTP server username
-        pass: "@Gromedia2024", // Replace with your SMTP server password
-    },
+  host: "smtp.hostinger.com", // Replace with your SMTP server host
+  port: 465, // Replace with your SMTP server port
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: "info@gromedia.co.in", // Replace with your SMTP server username
+    pass: "@Gromedia2024", // Replace with your SMTP server password
+  },
 });
 
 const sendMail = ({ to, subject, html, from = "info@gromedia.co.in" }) => {
-    return new Promise((resolve, reject) => {
-        const mailOptions = {
-            from: 'ManoVaidya <info@gromedia.co.in>',
-            to,
-            subject,
-            html,
-        };
+  return new Promise((resolve, reject) => {
+    const mailOptions = {
+      from: "ManoVaidya <info@gromedia.co.in>",
+      to,
+      subject,
+      html,
+    };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                return reject(error);
-            }
-            resolve(info);
-        });
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve(info);
     });
+  });
 };
 
-export { sendOtpPartnerSignUp, sendResetPassword, sendEmailUpdateOtp, sendThankYouForBookingConsultation }
+export {
+  sendOtpPartnerSignUp,
+  sendResetPassword,
+  sendEmailUpdateOtp,
+  sendThankYouForBookingConsultation,
+};
