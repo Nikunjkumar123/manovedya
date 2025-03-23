@@ -13,7 +13,7 @@ const MindHealthTest = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          "http://localhost:8000/api/get-banners"
+          "https://api.manovaidya.com/api/get-banners"
         );
         if (response.data.success) {
           setBanners(response.data.data);
@@ -43,7 +43,9 @@ const MindHealthTest = () => {
       });
 
       if (result.isConfirmed) {
-        await axios.delete(`http://localhost:8000/api/delete-banner/${id}`);
+        await axios.delete(
+          `https://api.manovaidya.com/api/delete-banner/${id}`
+        );
         setBanners(banners.filter((banner) => banner._id !== id));
         toast.success("Banner deleted successfully");
       }
@@ -103,7 +105,7 @@ const MindHealthTest = () => {
                   <th scope="row">{index + 1}</th>
                   <td>
                     <img
-                      src={`http://localhost:8000/${banner.bannerImage}`}
+                      src={`https://api.manovaidya.com/${banner.bannerImage}`}
                       alt={banner.bannerTitle}
                       style={{ width: "100px", height: "auto" }}
                     />

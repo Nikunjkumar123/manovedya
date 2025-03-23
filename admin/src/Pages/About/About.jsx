@@ -14,7 +14,7 @@ const About = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          "http://localhost:8000/api/get-banners"
+          "https://api.manovaidya.com/api/get-banners"
         );
         if (response.data.success) {
           setBanners(response.data.data);
@@ -44,7 +44,9 @@ const About = () => {
       });
 
       if (result.isConfirmed) {
-        await axios.delete(`http://localhost:8000/api/delete-banner/${id}`);
+        await axios.delete(
+          `https://api.manovaidya.com/api/delete-banner/${id}`
+        );
         setBanners((prevBanners) =>
           prevBanners.filter((banner) => banner._id !== id)
         );

@@ -12,7 +12,9 @@ const UpdateAbout = () => {
   useEffect(() => {
     const fetchAbout = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/get-about");
+        const response = await axios.get(
+          "https://api.manovaidya.com/api/get-about"
+        );
         if (response.data.success) {
           setContent(response.data.data.description || "");
         } else {
@@ -32,9 +34,12 @@ const UpdateAbout = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.put("http://localhost:8000/api/update-about", {
-        description: content,
-      });
+      const response = await axios.put(
+        "https://api.manovaidya.com/api/update-about",
+        {
+          description: content,
+        }
+      );
 
       if (response.data.success) {
         toast.success("About content updated successfully!");
@@ -66,11 +71,18 @@ const UpdateAbout = () => {
         <form onSubmit={handleSubmit} className="row g-3">
           <div className="col-12">
             <label className="form-label">About Content</label>
-            <JoditEditor value={content} onChange={(newContent) => setContent(newContent)} />
+            <JoditEditor
+              value={content}
+              onChange={(newContent) => setContent(newContent)}
+            />
           </div>
 
           <div className="col-12 text-center">
-            <button type="submit" disabled={isLoading} className={`btn ${isLoading ? "not-allowed" : "allowed"}`}>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`btn ${isLoading ? "not-allowed" : "allowed"}`}
+            >
               {isLoading ? "Please Wait..." : "Update About"}
             </button>
           </div>

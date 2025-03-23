@@ -1,11 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
-import './Dashboard.css' // Create a separate CSS file for styling
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import "./Dashboard.css"; // Create a separate CSS file for styling
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Dashboard = () => {
   // States to store data for each section
@@ -26,59 +42,76 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         // Fetch users
-        const usersResponse = await axios.get('http://localhost:8000/api/user');
+        const usersResponse = await axios.get(
+          "https://api.manovaidya.com/api/user"
+        );
         setUsers(usersResponse.data.data);
 
         // Fetch banners
-        const bannersResponse = await axios.get('http://localhost:8000/api/get-banners');
+        const bannersResponse = await axios.get(
+          "https://api.manovaidya.com/api/get-banners"
+        );
         setBanners(bannersResponse.data.data);
 
         // Fetch categories
-        const categoriesResponse = await axios.get('http://localhost:8000/api/get-main-category');
+        const categoriesResponse = await axios.get(
+          "https://api.manovaidya.com/api/get-main-category"
+        );
         setCategories(categoriesResponse.data.data);
 
         // Fetch sub-categories
-        const subCategoriesResponse = await axios.get('http://localhost:8000/api/get-subcategory');
+        const subCategoriesResponse = await axios.get(
+          "https://api.manovaidya.com/api/get-subcategory"
+        );
         setSubCategories(subCategoriesResponse.data.data);
 
         // Fetch colors
-        const colorsResponse = await axios.get('http://localhost:8000/api/get-color');
+        const colorsResponse = await axios.get(
+          "https://api.manovaidya.com/api/get-color"
+        );
         setColors(colorsResponse.data.data);
 
         // Fetch sizes
-        const sizesResponse = await axios.get('http://localhost:8000/api/get-size');
+        const sizesResponse = await axios.get(
+          "https://api.manovaidya.com/api/get-size"
+        );
         setSizes(sizesResponse.data.data);
 
         // Fetch flowers
-        const flowersResponse = await axios.get('http://localhost:8000/api/get-flover');
+        const flowersResponse = await axios.get(
+          "https://api.manovaidya.com/api/get-flover"
+        );
         setFlowers(flowersResponse.data.data);
 
-
         // Fetch products
-        const productsResponse = await axios.get('http://localhost:8000/api/all-product');
+        const productsResponse = await axios.get(
+          "https://api.manovaidya.com/api/all-product"
+        );
         setProducts(productsResponse.data.data);
 
         // Fetch tags
-        const tagsResponse = await axios.get('http://localhost:8000/api/get-tags');
+        const tagsResponse = await axios.get(
+          "https://api.manovaidya.com/api/get-tags"
+        );
         setTags(tagsResponse.data.data);
 
         // Fetch vouchers
-        // const vouchersResponse = await axios.get('http://localhost:8000/api/vouchers');
+        // const vouchersResponse = await axios.get('https://api.manovaidya.com/api/vouchers');
         // setVouchers(vouchersResponse.data);
 
         // Fetch orders
-        const ordersResponse = await axios.get('http://localhost:8000/api/checkouts');
+        const ordersResponse = await axios.get(
+          "https://api.manovaidya.com/api/checkouts"
+        );
         // console.log(ordersResponse)
         setOrders(ordersResponse.data.data);
-
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
   }, []); // Empty dependency array to run only once on mount
-
 
   // States to store data for each section
   const [orderss, setOrderss] = useState([]);
@@ -89,11 +122,11 @@ const Dashboard = () => {
   //   const fetchData = async () => {
   //     try {
   //       // Fetch orders for show order graph
-  //       const ordersResponse = await axios.get('http://localhost:8000/api/orders');
+  //       const ordersResponse = await axios.get('https://api.manovaidya.com/api/orders');
   //       setOrderss(ordersResponse.data);
 
   //       // Fetch day-by-day sale data for the graph
-  //       const salesResponse = await axios.get('http://localhost:8000/api/day-sales');
+  //       const salesResponse = await axios.get('https://api.manovaidya.com/api/day-sales');
   //       setDaySales(salesResponse.data);
 
   //     } catch (error) {
@@ -120,16 +153,16 @@ const Dashboard = () => {
 
   // Prepare data for Day by Day Sale Graph
   const daySalesData = {
-    labels: daySales.map(sale => sale.date), // Assuming 'date' is available in day sales
+    labels: daySales.map((sale) => sale.date), // Assuming 'date' is available in day sales
     datasets: [
       {
-        label: 'Sales',
-        data: daySales.map(sale => sale.totalSales), // Assuming 'totalSales' contains sale amounts
+        label: "Sales",
+        data: daySales.map((sale) => sale.totalSales), // Assuming 'totalSales' contains sale amounts
         fill: false,
-        borderColor: 'rgba(255,99,132,1)',
-        tension: 0.1
-      }
-    ]
+        borderColor: "rgba(255,99,132,1)",
+        tension: 0.1,
+      },
+    ],
   };
   return (
     <div className="dashboard-container">
@@ -190,7 +223,7 @@ const Dashboard = () => {
             {/* <pre>{JSON.stringify(subCategories, null, 2)}</pre> */}
           </Link>
         </div>
-            
+
         <div className="dashboard-card">
           <Link to="/all-size">
             <i className="fa-solid fa-ruler-combined"></i>
@@ -213,7 +246,6 @@ const Dashboard = () => {
           </Link>
         </div>
 
-
         <div className="dashboard-card">
           <Link to="/all-users">
             <i className="fa-solid fa-users"></i>
@@ -224,8 +256,6 @@ const Dashboard = () => {
             {/* <pre>{JSON.stringify(users, null, 2)}</pre> */}
           </Link>
         </div>
-
-
       </div>
 
       {/* <div className="dashboard-card">
@@ -240,7 +270,7 @@ const Dashboard = () => {
           <Line data={daySalesData} />
         </div> */}
     </div>
-  )
-}
+  );
+};
 
 export default Dashboard;
