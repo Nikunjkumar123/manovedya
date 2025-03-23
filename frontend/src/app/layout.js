@@ -1,0 +1,55 @@
+"use client"; // Ensure useEffect works in Next.js app router
+
+import "./globals.css";
+import Header from "../app/Component/header/page";
+import Footer from "../app/Component/footer/page";
+import Script from "next/script"; // Use Next.js optimized Script loader
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "aos/dist/aos.css"; // Import AOS CSS from node_modules
+import { useEffect } from "react";
+import Aos from "aos";
+
+export default function RootLayout({ children }) {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      Aos.init({
+        duration: 400, // Animation duration in milliseconds
+        once: false, // Animation should happen only once
+        easing: "ease-in-out", // Smooth transition effect
+      });
+    }
+  }, []);
+
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        />
+      </head>
+      <body>
+        <Header />
+        {children}
+        <Footer />
+
+        {/* Load Bootstrap JavaScript */}
+        <Script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          crossOrigin="anonymous"
+          strategy="afterInteractive" // Ensures script is loaded after the page is interactive
+        />
+      </body>
+    </html>
+  );
+}
