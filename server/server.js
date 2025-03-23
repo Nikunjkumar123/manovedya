@@ -47,9 +47,9 @@ const allowedOrigins = [
   // "https://api.manovaidya.com",
   "http://localhost:3000",
   "http://localhost:3001",
-  "http://manovaidya.com",
-  "http://www.manovaidya.com",
-  "http://admin.manovaidya.com",
+  "https://manovaidya.com",
+  "https://www.manovaidya.com",
+  "https://admin.manovaidya.com",
 ];
 
 app.use(
