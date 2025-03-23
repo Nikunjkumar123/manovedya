@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+
 import dotenv from "dotenv";
 import multer from "multer";
 import path from "path";
@@ -105,7 +106,7 @@ app.use("/api/newsletter", newsLetterRoutes);
 //   .catch((error) => {
 //     console.error('MongoDB connection error:', error);
 //   });
-connectDb();
+connectDb(process.env.MONGODB_URI);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
