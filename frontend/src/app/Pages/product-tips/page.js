@@ -12,9 +12,9 @@ import ayurvedImage5 from "../../Images/kit-image-5.png";
 import ayurvedImage6 from "../../Images/kit-image-6.jpg";
 import Link from "next/link";
 import Image from "next/image";
-// import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation';
 const page = () => {
-  // const router = useRouter();
+  const router = useRouter();
   // const { categoryId } = router.query
   // console.log("XXXXXXXXXXXXXXXXXXX",categoryId)
   const faqData = [

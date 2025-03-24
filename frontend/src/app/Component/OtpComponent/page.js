@@ -1,7 +1,7 @@
 "use client";
 
 import { postData } from "@/app/services/FetchNodeServices";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 

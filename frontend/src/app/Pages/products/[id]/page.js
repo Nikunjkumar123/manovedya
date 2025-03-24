@@ -23,8 +23,7 @@ import ProductBlog from "../../../Component/ProductBlog/page";
 import { getData, postData, serverURL } from "@/app/services/FetchNodeServices";
 import { Parser } from "html-to-react";
 import Swal from "sweetalert2";
-import { useRouter } from "next/router";
-// import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation';
 
 const Page = ({ params }) => {
   // Unwrap the params with React.use()

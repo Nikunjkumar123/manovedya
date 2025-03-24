@@ -4,7 +4,7 @@ import React, { use, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getData, serverURL } from "@/app/services/FetchNodeServices"; // Ensure you have the correct import for your fetch function
-import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation';
 
 const EditOrder = ({ params }) => {
     const { id } = use(params);

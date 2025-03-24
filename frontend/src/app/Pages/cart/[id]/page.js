@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { use, useEffect, useState } from "react";
 import { getData, postData, serverURL } from "@/app/services/FetchNodeServices";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 const CartPage = ({ params }) => {
     const { id } = use(params);  // Destructure from params directly

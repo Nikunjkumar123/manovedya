@@ -6,7 +6,7 @@ import "./reset-password.css";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation';
 
 const ResetPassword = ({ params }) => {
     const { id } = use(params);

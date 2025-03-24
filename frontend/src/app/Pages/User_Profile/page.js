@@ -1,5 +1,6 @@
 "use client";
-import { useRouter } from 'next/router';
+
+import { useRouter } from 'next/navigation';
 import React, { use, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
@@ -14,10 +15,6 @@ export default function UserProfile() {
         setUser_data(user_data);
     }, [])
 
-
-
-
-    // Function to render account details in a table format
     const AccountDetails = () => {
         return (
             <div style={{
@@ -147,7 +144,7 @@ export default function UserProfile() {
                 localStorage.clear("User_data");
                 localStorage.clear("token");
                 // window.location.href = "/";
-                router.push("/");
+                router?.push("/");
                 Swal.fire('Deleted!', 'Your coupon has been deleted.', 'success');
             } catch (error) {
                 Swal.fire('Error!', 'There was an error deleting the coupon.', 'error');
