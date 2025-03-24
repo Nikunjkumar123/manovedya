@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import "./tips.css";
 import "../../Component/Hero/hero.css"
