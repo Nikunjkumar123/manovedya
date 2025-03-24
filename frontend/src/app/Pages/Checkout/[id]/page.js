@@ -14,10 +14,11 @@ import { getData, postData } from "@/app/services/FetchNodeServices";
 import { useRazorpay } from "react-razorpay";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 const Page = ({ params }) => {
   const { error, Razorpay } = useRazorpay();
-
+  const router = useRouter();
   const { id } = use(params);
   const [isChecked, setIsChecked] = useState(false);
   const [cart, setCart] = useState(null)
@@ -51,7 +52,8 @@ const Page = ({ params }) => {
     const result = await postData(`api/cart/delete-cart/${cart?._id}`);
     if (result?.success === true) {
       fetchCart();
-      window.location.href = '/'
+      // window.location.href = '/'
+      router.push('/')
     }
   };
 

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './Login.css'; // Make sure to create and import a CSS file for styling
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +17,7 @@ const Login = () => {
     } else {
       sessionStorage.setItem('login', true);
       window.location.href = '/dashboard';
+      // navigate('/dashboard');
     }
   };
 

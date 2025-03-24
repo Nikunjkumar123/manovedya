@@ -23,12 +23,14 @@ import ProductBlog from "../../../Component/ProductBlog/page";
 import { getData, postData, serverURL } from "@/app/services/FetchNodeServices";
 import { Parser } from "html-to-react";
 import Swal from "sweetalert2";
+import { useRouter } from "next/router";
 // import { useRouter } from "next/router";
 
 const Page = ({ params }) => {
   // Unwrap the params with React.use()
   const { id } = use(params);
   const { name } = use(params);
+  const router = useRouter();
   const [product, setProduct] = useState(null);
   const [cart, setCart] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -158,14 +160,16 @@ const Page = ({ params }) => {
         });
       }
     } else {
-      window.location.href = `/Pages/login`
+      // window.location.href = `/Pages/login`
+      router.push('/Pages/login')
     }
   }
 
 
   const goToCart = () => {
     if (user_token) {
-      window.location.href = `/Pages/cart/${User_data?._id}`
+      // window.location.href = `/Pages/cart/${User_data?._id}`
+      router.push(`/Pages/cart/${User_data?._id}`)
     }
   }
   // console.log("XXXXXXXXXXXXXXXX", product?.urls[0].url)

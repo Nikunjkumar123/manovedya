@@ -9,8 +9,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 
 const ResetPassword = ({ params }) => {
-    // const router = useRouter();
     const { id } = use(params);
+    const router = useRouter();
     const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState("");
@@ -38,8 +38,8 @@ const ResetPassword = ({ params }) => {
             if (response.status === true) {
                 setSuccess(true);
                 toast.success(response.message || "User password changed successfully");
-                // router.push("/Pages/Login");
-                window.location.href = '/Pages/Login';
+                router.push("/Pages/Login");
+                // window.location.href = '/Pages/Login';
             } else {
                 setError("Failed to reset password. Please try again.");
                 toast.error(response.message || "Failed to reset password. Please try again.");

@@ -4,9 +4,11 @@ import React, { use, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getData, serverURL } from "@/app/services/FetchNodeServices"; // Ensure you have the correct import for your fetch function
+import { useRouter } from "next/router";
 
 const EditOrder = ({ params }) => {
     const { id } = use(params);
+    const router = useRouter();
     const [orderData, setOrderData] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(null);
@@ -17,7 +19,8 @@ const EditOrder = ({ params }) => {
     }, []);
 
     if (isLoggedIn === false) {
-        window.location.href = "/Pages/Login";
+        // window.location.href = ;
+        router.push("/Pages/Login")
         return null;
     }
 
@@ -49,7 +52,7 @@ const EditOrder = ({ params }) => {
     if (!orderData) {
         return (
             <div className="container mt-5">
-                <p>{id ? "Loading order details..." : window.location.href = "/Pages/Login"}</p>
+                <p>{id ? "Loading order details..." : router.push("/Pages/Login")}</p>
             </div>
         );
     }
@@ -65,7 +68,7 @@ const EditOrder = ({ params }) => {
                         <div className="links">
                             <button
                                 className="btn btn-outline-secondary"
-                                onClick={() => window.location.href = "/"}
+                                onClick={() => router.push = "/"}
                             >
                                 Back <i className="fa fa-arrow-left"></i>
                             </button>
@@ -197,7 +200,7 @@ const EditOrder = ({ params }) => {
                     </div>
                 </div>
             ) : (
-                window.location.href = "/Pages/Login"
+                router.push("/Pages/Login")
             )}
 
             <ToastContainer />

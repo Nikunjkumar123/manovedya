@@ -1,8 +1,10 @@
 "use client";
+import { useRouter } from 'next/router';
 import React, { use, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
 export default function UserProfile() {
+    const router = useRouter();
     const [selectedSection, setSelectedSection] = useState('dashboard');
     const [user_data, setUser_data] = useState('');
 
@@ -144,7 +146,8 @@ export default function UserProfile() {
             try {
                 localStorage.clear("User_data");
                 localStorage.clear("token");
-                window.location.href = "/";
+                // window.location.href = "/";
+                router.push("/");
                 Swal.fire('Deleted!', 'Your coupon has been deleted.', 'success');
             } catch (error) {
                 Swal.fire('Error!', 'There was an error deleting the coupon.', 'error');
@@ -182,7 +185,7 @@ export default function UserProfile() {
                         Dashboard
                     </div>
                     <div style={{ padding: '10px 15px', borderRadius: '5px', cursor: 'pointer', transition: 'background-color 0.3s', textAlign: 'center', }}
-                        onClick={() => window.location.href = `/Pages/trackOrder/${user_data?._id}`}>
+                        onClick={() => router.push(`/Pages/trackOrder/${user_data?._id}`)}>
                         Your Orders
                     </div>
                     <div
