@@ -1,10 +1,19 @@
 "use client";
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
 export default function UserProfile() {
     const [selectedSection, setSelectedSection] = useState('dashboard');
-    const user_data = JSON.parse(localStorage.getItem("User_data"));
+    const [user_data, setUser_data] = useState('');
+
+    useEffect(() => {
+        const data = localStorage.getItem("User_data");
+        const user_data = JSON.parse(data);
+        setUser_data(user_data);
+    }, [])
+
+
+
 
     // Function to render account details in a table format
     const AccountDetails = () => {

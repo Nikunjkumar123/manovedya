@@ -25,13 +25,16 @@ const Page = ({ params }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState('');
+  const [user_data, setUser_data] = useState(null)
 
-  // Assuming this is user data fetched from localStorage
-  const item = localStorage.getItem("productItem");
-  const productItem = JSON.parse(item)
-  const data = localStorage.getItem("User_data");
-  const user_data = JSON.parse(data);
 
+  useEffect(() => {
+    const item = localStorage.getItem("productItem");
+    const productItem = JSON.parse(item)
+    const data = localStorage.getItem("User_data");
+    const user_data = JSON.parse(data);
+    setUser_data(user_data)
+  }, [])
   const fetchCart = async () => {
     const result = await getData(`api/cart/get-cart/${id}`);
     // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXX", result)

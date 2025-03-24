@@ -9,12 +9,17 @@ import { useRouter } from "next/navigation";
 
 const CartPage = ({ params }) => {
     const { id } = use(params);  // Destructure from params directly
-    const user = localStorage.getItem('User_data')
-    const User_data = JSON.parse(user)
+
+    const [User_data, setUser_data] = useState([]);
     const [cart, setCart] = useState([]);
 
     const router = useRouter();
 
+    useEffect(() => {
+        const user = localStorage.getItem('User_data') || null
+        const User_data = JSON.parse(user)
+        setUser_data(User_data)
+    }, [])
     const fetchCart = async () => {
         const result = await getData(`api/cart/get-cart/${id}`);
         console.log("XXXXXXXXXXXXX", result)

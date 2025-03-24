@@ -18,7 +18,6 @@ const Page = () => {
   const [couponTitle, setCouponTitle] = useState([]);
 
   useEffect(() => {
-    // Ensure localStorage is accessed only on the client side
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("User_data");
     const parsedUser = user ? JSON.parse(user) : null;

@@ -1,22 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getData, serverURL } from "@/app/services/FetchNodeServices"; // Ensure you have the correct import for your fetch function
 
 const EditOrder = ({ params }) => {
-    const { id } = params; // Extracting the id from the params
-    const [orderData, setOrderData] = useState(null); // Order data initialization
+    const { id } = use(params);
+    const [orderData, setOrderData] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState("");
-    
-    // Check if the user is logged in by checking localStorage for user data
-    const isLoggedIn = localStorage.getItem("User_data");
-    
-    // Redirect to login if user is not logged in
-    if (!isLoggedIn) {
+    const [isLoggedIn, setIsLoggedIn] = useState(null);
+
+    useEffect(() => {
+        const userData = localStorage?.getItem("User_data");
+        setIsLoggedIn(userData ? true : false);
+    }, []);
+
+    if (isLoggedIn === false) {
         window.location.href = "/Pages/Login";
-        return null;  // Prevent rendering the page content
+        return null;
     }
 
     // Fetch API data

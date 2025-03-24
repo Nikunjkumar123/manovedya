@@ -32,12 +32,18 @@ const Page = ({ params }) => {
   const [product, setProduct] = useState(null);
   const [cart, setCart] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const user = localStorage.getItem('User_data')
-  const User_data = JSON.parse(user)
-  const user_token = localStorage.getItem('token')
+  const [User_data, setUser_data] = useState(null)
+  const [user_token, setUser_token] = useState(null)
   const [buttonText, setButtonText] = useState('BUY IT NOW')
   const [btn, setBtn] = useState(false)
 
+  useEffect(() => {
+    const user = localStorage.getItem('User_data')
+    const User_data = JSON.parse(user)
+    setUser_data(User_data)
+    const user_token = localStorage.getItem('token')
+    setUser_token(user_token)
+  }, [])
   ////////////////////////////////////////////////////////////////////////
 
   const fetchProductById = async () => {
