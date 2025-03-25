@@ -25,16 +25,13 @@ router.post('/create-herbs', upload.any('herbsImage'), async (req, res) => {
         console.log("Request Body:", req.body); // Debugging request body
         console.log("Uploaded Files:", req.files); // Debugging uploaded files
 
-        // Parse the herbs data, ensuring it's an array or an object
         let herbsData = [];
 
         if (typeof req.body.herbs === 'string') {
             // console.log('GGGGGGGGG 1')
             // If it's a string (should be a JSON string), parse it
             try {
-                // console.log('GGGGGGGGG 2')
                 herbsData = JSON.parse(req.body.herbs);
-                // If the parsed result is not an array, make it an array
                 if (!Array.isArray(herbsData)) {
                     // console.log('GGGGGGGGG 3')
                     herbsData = [herbsData];
@@ -82,14 +79,12 @@ router.post('/create-herbs', upload.any('herbsImage'), async (req, res) => {
 
 router.get('/get-all-herbs', async (req, res) => {
     try {
-        // Fetch all herbs from the database
-        const herbs = await Herbs.find().populate('productId'); // Use .populate() if you want to fetch the related product data
+        const herbs = await Herbs.find()
 
-        // Check if any herbs are found
         if (!herbs || herbs.length === 0) {
             return res.status(404).json({ error: 'No herbs found' });
         }
-        // Send the herbs data as a response
+
         res.status(200).json({
             status: true,
             message: 'Herbs retrieved successfully',
@@ -128,7 +123,7 @@ router.post('/update-herbs/:id', upload.any('herbsImage'), async (req, res) => {
 
         // Parse the 'herbs' field from the request body
         const data = JSON.parse(req.body.herbs);
-        const { productId, name, content } = data;
+        const {  name, content } = data;
 
         // Check if files are uploaded
         let imageUrls = [];
@@ -143,7 +138,6 @@ router.post('/update-herbs/:id', upload.any('herbsImage'), async (req, res) => {
         }
 
         const updatedData = {
-            productId,
             name,
             content,
             images: imageUrls.length > 0 ? imageUrls : existingHerb.images, // keep existing images if none are uploaded
@@ -169,6 +163,45 @@ router.post('/update-herbs/:id', upload.any('herbsImage'), async (req, res) => {
         res.status(500).json({ error: 'An error occurred while updating herb' });
     }
 });
+
+router.post('/update-herbs-without-image/:id', async (req, res) => {
+    try {
+        console.log("Request Body:", req.body); // Debugging request body
+        console.log("Uploaded Files:", req.files);
+
+        const data = JSON.parse(req.body.herbs);
+        const {  name, content } = data;
+        const existingHerb = await Herbs.findById(req.params.id);
+        if (!existingHerb) {
+            return res.status(404).json({ error: 'Herb not found' });
+        }
+
+        const updatedData = {
+            name,
+            content,
+        };
+
+        const updatedHerbs = await Herbs.updateOne(
+            { _id: req.params.id },
+            { $set: updatedData }
+        );
+
+        if (updatedHerbs.nModified === 0) {
+            return res.status(400).json({ error: 'No herbs were updated' });
+        }
+
+        res.status(200).json({
+            status: true,
+            message: 'Herb updated successfully',
+            data: updatedHerbs,
+        });
+
+    } catch (error) {
+        console.error('Error updating herb:', error);
+        res.status(500).json({ error: 'An error occurred while updating herb' });
+    }
+});
+
 
 
 

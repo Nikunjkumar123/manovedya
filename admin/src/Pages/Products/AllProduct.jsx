@@ -58,16 +58,16 @@ const AllProduct = () => {
         }
     };
 
-    
+
     const handleCheckboxwellnessKitsChange = async (e, productId) => {
         const updatedStatus = e.target.checked;
-    
+
         try {
             const response = await postData('api/products/change-status-wellnessKits', {
                 productId: productId,
                 wellnessKits: updatedStatus
             });
-    
+
             if (response.success === true) {
                 // Update the status in the local state correctly
                 const updatedProducts = products.map(product => {
@@ -76,7 +76,7 @@ const AllProduct = () => {
                     }
                     return product; // Don't mutate other products, just return the updated one
                 });
-    
+
                 setProducts(updatedProducts); // Set the updated products state
                 toast.success('Product wellness Kits status  updated successfully');
             }
@@ -88,13 +88,13 @@ const AllProduct = () => {
 
     const handleCheckboxChange = async (e, productId) => {
         const updatedStatus = e.target.checked;
-    
+
         try {
             const response = await postData('api/products/change-status', {
                 productId: productId,
                 isActive: updatedStatus
             });
-    
+
             if (response.success === true) {
                 // Update the status in the local state correctly
                 const updatedProducts = products.map(product => {
@@ -103,7 +103,7 @@ const AllProduct = () => {
                     }
                     return product; // Don't mutate other products, just return the updated one
                 });
-    
+
                 setProducts(updatedProducts); // Set the updated products state
                 toast.success('Product status updated successfully');
             }
@@ -241,7 +241,7 @@ const AllProduct = () => {
             </section>
 
             {/* FAQ Section */}
-            <section className="main-table">
+            {/* <section className="main-table">
                 <div className="head">
                     <h4>All FAQ</h4>
                 </div>
@@ -297,10 +297,10 @@ const AllProduct = () => {
                         )}
                     </tbody>
                 </table>
-            </section>
+            </section> */}
 
             {/* Blog Image Section */}
-            <section className="main-table">
+            {/* <section className="main-table">
                 <div className="head">
                     <h4>All Blog Images</h4>
                 </div>
@@ -359,7 +359,7 @@ const AllProduct = () => {
                         )}
                     </tbody>
                 </table>
-            </section>
+            </section> */}
         </>
     );
 };

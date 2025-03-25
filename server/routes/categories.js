@@ -70,10 +70,11 @@ router.post('/create-category', upload.single('categoryImage'), async (req, res)
   try {
     const { categoryName, description, shortDescription, categoryStatus, productId, faq } = req.body;
 
-    console.log("CCCCC", req?.body)
-    // Ensure categoryName is provided and not empty or null
+    console.log("CCCCC", req?.body);
+
+    // Validate categoryName
     if (!categoryName || categoryName.trim() === '') {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: 'Category name is required and cannot be empty'
       });
@@ -82,27 +83,35 @@ router.post('/create-category', upload.single('categoryImage'), async (req, res)
     // Check if category already exists
     const existingCategory = await Categorie.findOne({ categoryName });
     if (existingCategory) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: 'Category with this name already exists'
       });
     }
 
-    // Process uploaded image
+    // Process uploaded image (if any)
     const image = req.file ? `${req.file.filename}` : null;
 
     // Ensure categoryStatus is correctly parsed as a boolean
     const isActive = categoryStatus === 'true' || categoryStatus === 'True' || categoryStatus === true;
 
-    // Convert productId string to an array of ObjectIds
+    // Handle productId (optional field, should be an array of ObjectIds)
     let productIds = [];
-    try {
-      productIds = JSON.parse(productId)
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid productId format'
-      });
+    if (productId) {
+      try {
+        // Ensure that productId is parsed as an array of ObjectIds
+        productIds = JSON.parse(productId);
+
+        // If productId is an empty string, reset it to an empty array
+        if (productIds.length === 1 && productIds[0] === "") {
+          productIds = [];
+        }
+      } catch (error) {
+        return res.status(200).json({
+          success: false,
+          message: 'Invalid productId format'
+        });
+      }
     }
 
     // Create new category
@@ -110,14 +119,16 @@ router.post('/create-category', upload.single('categoryImage'), async (req, res)
       categoryName,
       description,
       shortDescription,
-      productId: productIds,  // Use the converted ObjectId array here
+      productId: productIds,  // Use the parsed ObjectId array
       image,
       faq,
-      isActive: isActive
+      isActive
     });
 
+    // Save the category to the database
     await category.save();
 
+    // Return success response
     res.status(201).json({
       success: true,
       message: 'Category created successfully',
@@ -132,6 +143,7 @@ router.post('/create-category', upload.single('categoryImage'), async (req, res)
     });
   }
 });
+ 
 
 // Update category (admin only)
 router.post('/update-category/:id', upload.single('categoryImage'), async (req, res) => {

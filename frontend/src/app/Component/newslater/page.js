@@ -10,7 +10,7 @@ const Page = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -32,15 +32,14 @@ const Page = () => {
 
       if (response.success === true) {
         // Handle success
-        alert("Subscription successful!");
+        // alert("Subscription successful!");
+        toast.success("Subscription successful!")
         setEmail(""); // Reset form fields
         setPhone("");
         setName("");
         // setError("");
-        setError("Subscription successful!");
       } else {
-        // alert("This email is already subscribed!");
-        setError("Something went wrong, please try again.");
+        toast.error("Something went wrong, please try again.")
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -94,7 +93,7 @@ const Page = () => {
               </div>
 
               {/* Error message */}
-              {error && <p className="error-text">{error}</p>}
+              {/* {error && <p className="error-text">{error}</p>} */}
 
               {/* Submit button */}
               <div className="text-center">

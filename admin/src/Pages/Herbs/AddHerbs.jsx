@@ -7,25 +7,25 @@ import "react-toastify/dist/ReactToastify.css";
 import { getData, postData } from "../../services/FetchNodeServices.js";
 
 const AddHerbs = () => {
-    const [herbs, setHerbs] = useState([{ image: null, name: "", content: "", selectedProduct: "" }]);
+    const [herbs, setHerbs] = useState([{ image: null, name: "", content: "",}]);
     const [isLoading, setIsLoading] = useState(false);
     const [images, setImages] = useState([]);
-    const [productList, setProductList] = useState([]);
+    // const [productList, setProductList] = useState([]);
     const [formData, setFormData] = useState({});
     const navigate = useNavigate();
 
     // Fetch Product Data
-    const fetchProductData = async () => {
-        const data = await getData(`api/products/all-product`);
-        console.log("HHHHHHHH", data)
-        if (data.success === true) {
-            setProductList(data?.products);
-        }
-    };
+    // const fetchProductData = async () => {
+    //     const data = await getData(`api/products/all-product`);
+    //     console.log("HHHHHHHH", data)
+    //     if (data?.success === true) {
+    //         setProductList(data?.products);
+    //     }
+    // };
 
-    useEffect(() => {
-        fetchProductData();
-    }, []);
+    // useEffect(() => {
+    //     fetchProductData();
+    // }, []);
 
     // Handle Input Change for Herbs
     const handleInputChange = (index, field, value) => {
@@ -51,7 +51,7 @@ const AddHerbs = () => {
 
     // Add More Herb Fields
     const addHerbField = () => {
-        setHerbs([...herbs, { image: null, name: "", content: "", selectedProduct: "" }]);
+        setHerbs([...herbs, { image: null, name: "", content: ""}]);
     };
 
     // Delete Herb Field
@@ -143,7 +143,7 @@ const AddHerbs = () => {
                                 </div>
 
                                 {/* Product Selection */}
-                                <div className="col-md-4">
+                                {/* <div className="col-md-4">
                                     <label className="form-label">Select Product</label>
                                     <select
                                         name="product"
@@ -156,7 +156,7 @@ const AddHerbs = () => {
                                             <option key={idx} value={product?._id}>{product?.productName}</option>
                                         ))}
                                     </select>
-                                </div>
+                                </div> */}
 
                                 {/* Jodit Editor for Description */}
                                 <div className="col-md-12">

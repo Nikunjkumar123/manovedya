@@ -76,8 +76,8 @@ const BlogPage = () => {
                   className="blog-img"
                 />
                 <div className="blog-details">
-                  <p className="blog-date">{formatDate(item?.date)}</p>
-                  <h3 className="blog-title">{item?.blogTitle}</h3>
+                  <p className="blog-date">{formatDate(item?.date)} / {item?.blogTitle}</p>
+                  <h3 className="blog-title">{item?.name}</h3>
                   <p className="blog-desc"
                     style={{
                       lineHeight: '1.8',

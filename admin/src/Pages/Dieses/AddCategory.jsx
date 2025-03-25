@@ -89,15 +89,15 @@ const AddCategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    if (formData.categoryImage.width !== 300 || formData.categoryImage.height !== 200) {
-      return alert("Image must be 300px wide and 200px tall.");
-    }
+    // if (formData?.categoryImage?.width !== 300 || formData?.categoryImage?.height !== 200) {
+    //   return alert("Image must be 300px wide and 200px tall.");
+    // }
 
     const uploadData = new FormData();
     uploadData.append("categoryName", formData.categoryName);
     uploadData.append("categoryImage", formData.categoryImage);
     uploadData.append("categoryStatus", formData.categoryStatus);
-    uploadData.append("productId", JSON.stringify(formData.productId)); // Ensure product IDs are serialized
+    uploadData.append("productId", JSON.stringify(formData.productId || null)); // Ensure product IDs are serialized
     uploadData.append("description", formData.description);
     uploadData.append("shortDescription", formData.shortDescription);
 
@@ -111,12 +111,15 @@ const AddCategory = () => {
       const response = await postData("api/categories/create-category", uploadData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log('RESPONSE', response);
       if (response?.success === true) {
         toast.success(response?.message || 'Category created successfully');
         navigate("/all-dieses");
+      } else {
+        toast.error(response?.message || "Error adding category");
       }
     } catch (error) {
-      toast.error(error.response?.message || "Error adding category");
+      toast.error(error?.response?.message || "Error adding category");
       console.error("Error adding category:", error);
     } finally {
       setIsLoading(false);
@@ -155,7 +158,7 @@ const AddCategory = () => {
           </div>
           <div className="col-md-4">
             <label htmlFor="categoryImage" className="form-label">
-              Disease Image  size = w 300* H 200 px only
+              Image  size = w 300* H 200 px only
             </label>
             <input
               type="file"
@@ -198,10 +201,7 @@ const AddCategory = () => {
             />
           </div>
 
-          <div className="col-md-12">
-            <label className="form-label">For Information</label>
-            <JoditEditor value={formData?.description} onChange={handleJoditChange} />
-          </div>
+
 
           <div className="col-12">
             <div className="form-check">
@@ -226,29 +226,42 @@ const AddCategory = () => {
           </div>
 
           {formData.faq.map((faq, index) => (
-            <div key={index} className="col-md-6">
-              <label className="form-label">Add Question</label>
-              <input
-                type="text"
-                className="form-control"
-                name="question"
-                value={faq.question}
-                onChange={(e) => handleFaqChange(index, e)}
-              />
-              <label className="form-label">Add Answer</label>
-              <input
-                type="text"
-                className="form-control"
-                name="answer"
-                value={faq.answer}
-                onChange={(e) => handleFaqChange(index, e)}
-              />
+            <div key={index} className="col-md-12 " style={{ display: 'flex', gap: '10px' }} >
+              <div className="col-md-6">
+                <label className="form-label">Add Question</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="question"
+                  value={faq.question}
+                  onChange={(e) => handleFaqChange(index, e)}
+                />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Add Answer</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="answer"
+                  value={faq.answer}
+                  onChange={(e) => handleFaqChange(index, e)}
+                />
+              </div>
             </div>
           ))}
+
+
+
           <div className="col-md-12">
             <button type="button" className="btn btn-primary mt-3" onClick={addFaq}>
               Add FAQ
             </button>
+          </div>
+
+
+          <div className="col-md-12">
+            <label className="form-label">Buyer's Guide</label>
+            <JoditEditor value={formData?.description} onChange={handleJoditChange} />
           </div>
 
           <div className="col-md-12 mt-3">

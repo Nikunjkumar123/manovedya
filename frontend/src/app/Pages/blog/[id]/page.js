@@ -51,6 +51,8 @@ const BlogDetail = ({ params }) => {
                 </div>
 
                 {/* Blog description */}
+                <h1 style={{ fontSize: '36px', fontWeight: '600', color: '#333', marginBottom: '20px' }}>{blog.name}</h1>
+
                 <div
                     style={{
                         lineHeight: '1.8',
@@ -64,10 +66,10 @@ const BlogDetail = ({ params }) => {
                 />
 
                 {/* Additional details */}
-                <div style={{ marginBottom: '20px' }}>
+                {/* <div style={{ marginBottom: '20px' }}>
                     <h3 style={{ fontSize: '24px', fontWeight: '500', color: '#444', marginBottom: '10px' }}>Additional Details</h3>
                     <p style={{ fontSize: '16px', color: '#666' }}>{blog.additionalDetails}</p>
-                </div>
+                </div> */}
 
                 {/* Displaying Date */}
                 <div style={{ fontSize: '14px', color: '#888', marginTop: '20px' }}>

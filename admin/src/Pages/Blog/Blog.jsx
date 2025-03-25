@@ -114,7 +114,7 @@ const Blog = () => {
               <th scope="col">Image</th>
               <th scope="col">Date</th>
               <th scope="col">Title</th>
-              <th scope="col">Descriptions</th>
+              {/* <th scope="col">Descriptions</th> */}
               <th scope="col">Show in home page</th>
               <th scope="col">Edit</th>
               <th scope="col">Delete</th>
@@ -129,7 +129,7 @@ const Blog = () => {
               </tr>
             ) : blogs.length > 0 ? (
               blogs.map((blog, index) => (
-                <tr key={blog?._id}>
+                <tr key={blog?._id} >
                   <th scope="row">{index + 1}</th>
                   <td>
                     <img
@@ -140,7 +140,7 @@ const Blog = () => {
                   </td>
                   <td>{formatDate(blog.date)}</td>
                   <td>{blog.blogTitle}</td>
-                  <td>{Parser().parse(blog.description)}</td>
+                  {/* <td >{Parser().parse(blog.description)}</td> */}
                   <td>
                     <input
                       type="checkbox"

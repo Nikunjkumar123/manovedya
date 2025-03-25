@@ -6,10 +6,14 @@ import { use, useEffect, useState } from "react";
 import { getData, postData, serverURL } from "@/app/services/FetchNodeServices";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import { login } from '../../../redux/slices/user-slice'
+import { useDispatch, useSelector } from "react-redux";
+
 
 const CartPage = ({ params }) => {
     const { id } = use(params);  // Destructure from params directly
-
+    const dispatch = useDispatch()
+    const { carts } = useSelector(state => state.user);
     const [User_data, setUser_data] = useState([]);
     const [cart, setCart] = useState([]);
 
@@ -30,7 +34,7 @@ const CartPage = ({ params }) => {
 
     useEffect(() => {
         fetchCart();
-    }, []);
+    }, [carts]);
 
 
     const calculateTotal = () =>
@@ -60,12 +64,16 @@ const CartPage = ({ params }) => {
             const result = await postData('api/cart/update', body);
             if (result?.success === true) {
                 setCart(result?.cart?.items);
+                console.log("result?.cart?.items", result?.cart.items)
+                const t = result?.cart.items
+                dispatch(login(result?.cart));
                 Swal.fire({
                     title: "Item Added!",
                     text: "Your item has been added to the cart.",
                     icon: "success",
                     confirmButtonText: "Okay",
                 });
+
             } else {
                 Swal.fire({
                     title: "Item Not Added!",
@@ -94,6 +102,8 @@ const CartPage = ({ params }) => {
                 icon: "success",
                 confirmButtonText: "Okay",
             });
+            dispatch(login(result?.cart));
+
         } else {
             Swal.fire({
                 title: "Item Not Removed!",

@@ -6,9 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; // To navigate to other pages
 import { postData } from "@/app/services/FetchNodeServices";
 import { toast, ToastContainer } from "react-toastify";
-
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/slices/user-slice"
 
 const page = () => {
+  const dispatch = useDispatch()
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(""); // Error handling state
   const router = useRouter(); // Use Next.js router for navigation
@@ -30,7 +32,8 @@ const page = () => {
       const response = await postData("api/users/user-login", payload);
       if (response?.status === true) {
         localStorage.setItem("token", response?.token);
-        localStorage.setItem("User_data", JSON.stringify(response?.user)); // Assuming the API returns a token
+        localStorage.setItem("User_data", JSON.stringify(response?.user));
+        dispatch(login(response?.token))
         router.push("/");
         toast.success("Login successful!");
       } else {

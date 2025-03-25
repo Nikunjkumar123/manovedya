@@ -165,7 +165,7 @@ const AddBlog = () => {
           </div>
 
           {/* Additional Details */}
-          <div className="col-md-12">
+          {/* <div className="col-md-12">
             <label htmlFor="additionalDetails" className="form-label">
               Additional Details
             </label>
@@ -177,7 +177,7 @@ const AddBlog = () => {
               value={formData.additionalDetails}
               onChange={handleChange}
             />
-          </div>
+          </div> */}
 
           {/* Checkbox */}
           <div className="col-12">

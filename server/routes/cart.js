@@ -11,7 +11,7 @@ router.get('/get-cart/:id', async (req, res) => {
     const { id } = req.params;  // This line is updated to correctly destructure the id
 
     let cart = await Cart.findOne({ user: id }).populate('items.product').populate('user');
-    // console.log("cart", cart)
+    console.log("cart", cart)
     if (!cart) {
       cart = new Cart({
         user: id,  // Ensure that the user ID is set correctly here

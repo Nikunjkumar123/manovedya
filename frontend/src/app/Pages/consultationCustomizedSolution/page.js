@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./customized.css";
 import Image from "next/image";
 import icon1 from "../../Images/icon1.png";
@@ -23,10 +23,19 @@ import reviewImage from "../../Images/reviewImage1.png";
 import { useRazorpay } from "react-razorpay";
 import Swal from "sweetalert2";
 import { postData } from "@/app/services/FetchNodeServices";
+import { useRouter } from "next/navigation";
 
 const page = () => {
   const { error, isLoading, Razorpay } = useRazorpay();
   const [formData, setFormData] = useState({})
+  const [user_data, setUser_data] = useState(null)
+  const router = useRouter();
+
+
+  useEffect(() => {
+    const user_data = JSON.parse(localStorage.getItem("User_data"))
+    setUser_data(user_data)
+  }, [])
 
   const data = [
     { title: "Dementia", image: icon1 },
@@ -148,7 +157,7 @@ const page = () => {
       description: "Test Transaction",
       image: `${logo}`,
       handler: async (razorpayResponse) => {
-        let body = { ...formData, payment_id: razorpayResponse.razorpay_payment_id };
+        let body = { ...formData, payment_id: razorpayResponse.razorpay_payment_id, userId: user_data?._id };
         let response = await postData(`api/consultation/create-consultation`, body);
         // console.log("response", response);
         if (response?.status === true) {
@@ -158,7 +167,7 @@ const page = () => {
             icon: "success",
             confirmButtonText: "Okay",
           });
-          
+          router.push("/");
         } else {
           Swal.fire({
             title: "Paymant Failed!",
@@ -201,7 +210,13 @@ const page = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Here we can create a payload from the state (formData)
+    if (formData.patientName.trim() === '' || formData.concernChallenge.trim() === '' || formData.email.trim() === '' || formData.scheduleCalendar.trim() === '' || formData.scheduleTime.trim() === '' || formData.chooseDoctor.trim() === '') {
+      alert('Please fill all the fields');
+      return;
+    }
+
     const payload = {
+      userId: user_data?._id,
       patientName: formData.patientName,
       concernChallenge: formData.concernChallenge,
       email: formData.email,
@@ -216,6 +231,14 @@ const page = () => {
     console.log('Payload:', payload);
     // Here you can send the payload to the server (API call)
   };
+
+
+  const today = new Date();
+  today.setDate(today.getDate() + 1); // Set the date to tomorrow
+
+  // Format the date as YYYY-MM-DD for the min attribute
+  const formattedDate = today.toISOString().split('T')[0];
+
 
   console.log('Payload@:', formData);
   return (
@@ -334,6 +357,7 @@ const page = () => {
                         <div className="consult-form">
                           <label htmlFor="patientName">Patient Name</label>
                           <input
+                            required
                             className="form-control"
                             name="patientName"
                             value={formData.patientName}
@@ -348,6 +372,7 @@ const page = () => {
                           <textarea
                             className="form-control"
                             rows="3"
+                            required
                             name="concernChallenge"
                             value={formData.concernChallenge}
                             onChange={handleChange}
@@ -359,6 +384,7 @@ const page = () => {
                           <label htmlFor="email">Email</label>
                           <input
                             type="email"
+                            required
                             className="form-control"
                             name="email"
                             value={formData.email}
@@ -371,6 +397,7 @@ const page = () => {
                           <label htmlFor="phone">Mobile No.</label>
                           <input
                             type="number"
+                            required
                             className="form-control"
                             name="phone"
                             value={formData.phone}
@@ -383,10 +410,12 @@ const page = () => {
                           <label htmlFor="scheduleCalendar">Schedule Calendar</label>
                           <input
                             type="date"
+                            required
                             className="form-control"
                             name="scheduleCalendar"
                             value={formData.scheduleCalendar}
                             onChange={handleChange}
+                            min={formattedDate}
                           />
                         </div>
                       </div>
@@ -396,6 +425,7 @@ const page = () => {
                           <select
                             className="form-control"
                             name="scheduleTime"
+                            required
                             value={formData.scheduleTime}
                             onChange={handleChange}
                           >

@@ -103,7 +103,7 @@ router.get('/all-product', async (req, res) => {
 
     // Get total count for pagination
     const total = await Product.countDocuments(filter);
-console.log("XXXXXXXXXXXXXXX", products)
+    console.log("XXXXXXXXXXXXXXX", products)
     res.status(200).json({
       success: true,
       products,
@@ -171,12 +171,11 @@ router.post('/create-product', upload.fields([{ name: 'productImages', maxCount:
       herbs,
       faqs,
       urls,
-      herbsId, // Added for clarity
+      herbsId,
     } = req.body;
 
-    // Log the incoming data for debugging purposes
     console.log("Incoming Data:", req.body);
-    console.log("Received files:", req?.files)
+    console.log("Received files:", req?.files);
 
     // Parse JSON strings if they are provided as strings
     const parsedVariants = typeof Variant === 'string' ? JSON.parse(Variant) : Variant;
@@ -184,7 +183,6 @@ router.post('/create-product', upload.fields([{ name: 'productImages', maxCount:
     const parsedFaqs = typeof faqs === 'string' ? JSON.parse(faqs) : faqs;
     const parsedUrls = typeof urls === 'string' ? JSON.parse(urls) : urls;
 
-    // Check for undefined or empty herbsId and parse if it's a valid JSON string
     let parsedHerbsId = [];
     if (herbsId) {
       try {
@@ -194,10 +192,9 @@ router.post('/create-product', upload.fields([{ name: 'productImages', maxCount:
       }
     }
 
-    // Process uploaded images (product images)
+    // Handle the uploaded files (productImages and blogImages)
     const productImages = req.files['productImages'] ? req.files['productImages'].map(file => file.filename) : [];
     const blogImages = req.files['blogImages'] ? req.files['blogImages'].map(file => file.filename) : [];
-
 
     // Construct the Variant array
     const variants = parsedVariants.map((v) => ({
@@ -259,6 +256,8 @@ router.post('/create-product', upload.fields([{ name: 'productImages', maxCount:
 
 
 
+
+
 router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCount: 8 }, { name: 'blogImages', maxCount: 4 }]), async (req, res) => {
   try {
     const {
@@ -269,30 +268,35 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
       herbs,
       faqs,
       urls,
-      herbsId, // Added for clarity
+      oldProductImage,
+      oldBlogImage,
+      herbsId,
     } = req.body;
 
-    // Log the incoming data for debugging purposes
     console.log("Incoming Data:", req.body);
     console.log("Received files:", req?.files);
 
-    // Parse JSON strings if they are provided as strings
-    const parsedVariants = typeof Variant === 'string' ? JSON.parse(Variant) : Variant;
-    const parsedHerbs = typeof herbs === 'string' ? JSON.parse(herbs) : herbs;
-    const parsedFaqs = typeof faqs === 'string' ? JSON.parse(faqs) : faqs;
-    const parsedUrls = typeof urls === 'string' ? JSON.parse(urls) : urls;
+    // Safe JSON parsing with error handling
+    const parseJson = (jsonString) => {
+      try {
+        return JSON.parse(jsonString);
+      } catch (error) {
+        console.error("Invalid JSON string:", error);
+        return [];
+      }
+    };
 
-    // Check for undefined or empty herbsId and parse if it's a valid JSON string
+    const parsedVariants = Variant ? parseJson(Variant) : [];
+    const parsedHerbs = herbs ? parseJson(herbs) : [];
+    const parsedFaqs = faqs ? parseJson(faqs) : [];
+    const parsedUrls = urls ? parseJson(urls) : [];
+    console.log("parsedHerbs bbbbbbbbbbbb", parsedHerbs);
+
     let parsedHerbsId = [];
     if (herbsId) {
-      try {
-        parsedHerbsId = JSON.parse(herbsId); // If it's valid JSON, parse it
-      } catch (err) {
-        console.error("Error parsing herbsId:", err);
-      }
+      parsedHerbsId = parseJson(herbsId);
     }
 
-    // Find the product to update
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({
@@ -301,9 +305,16 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
       });
     }
 
-    // Process uploaded images (product images)
-    const productImages = req.files['productImages'] ? req.files['productImages'].map(file => file.filename) : [];
-    const blogImages = req.files['blogImages'] ? req.files['blogImages'].map(file => file.filename) : [];
+    // Handle uploaded product and blog images
+    let productImages = [];
+    if (req.files && req.files['productImages'] && req.files['productImages'].length > 0) {
+      productImages = req.files['productImages'].map(file => file.filename);
+    }
+
+    let blogImages = [];
+    if (req.files && req.files['blogImages'] && req.files['blogImages'].length > 0) {
+      blogImages = req.files['blogImages'].map(file => file.filename);
+    }
 
     // Construct the Variant array
     const variants = parsedVariants.map((v) => ({
@@ -315,7 +326,6 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
       tex: v.tex || '0',
     }));
 
-    // Construct the Herbs array and handle empty images gracefully
     const herbsArray = parsedHerbs || []; // Default to empty array if undefined
 
     // Construct the FAQ array
@@ -324,57 +334,74 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
       answer: faq.answer,
     }));
 
-    // Construct the URLs array
     const urlsArray = parsedUrls.map((url) => ({
       url: url.url,
     }));
 
-    // If product images or blog images were uploaded, merge them with the existing ones
+    // Handling product image deletions and updates
     let updatedProductImages = product.productImages || [];
     if (productImages.length > 0) {
-      updatedProductImages = [...updatedProductImages, ...productImages];
+      if (oldProductImage && !productImages.some(newImage => oldProductImage.includes(newImage))) {
+        console.log(`Deleting old product images: ${oldProductImage}`);
+        oldProductImage.split(",").forEach(item => {
+          const filePath = `uploads/products/${item.trim()}`;
+          try {
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+              console.log(`Deleted old product image: ${item.trim()}`);
+            }
+          } catch (error) {
+            console.error(`Error deleting old product image ${item.trim()}:`, error);
+          }
+        });
+      }
+      updatedProductImages = [...productImages];
     }
 
+    // Handling blog image deletions and updates
     let updatedBlogImages = product.blogImages || [];
     if (blogImages.length > 0) {
-      updatedBlogImages = [...updatedBlogImages, ...blogImages];
+      if (oldBlogImage && !blogImages.some(newImage => oldBlogImage.includes(newImage))) {
+        console.log(`Deleting old blog images: ${oldBlogImage}`);
+        oldBlogImage.split(",").forEach(item => {
+          const filePath = `uploads/products/${item.trim()}`;
+          try {
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+              console.log(`Deleted old blog image: ${item.trim()}`);
+            }
+          } catch (error) {
+            console.error(`Error deleting old blog image ${item.trim()}:`, error);
+          }
+        });
+      }
+      updatedBlogImages = [...blogImages];
+    } else if (oldBlogImage) {
+      oldBlogImage.split(",").forEach(item => {
+        const filePath = `uploads/products/${item.trim()}`;
+        try {
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log(`Deleted old blog image: ${item.trim()}`);
+          }
+        } catch (error) {
+          console.error(`Error deleting old blog image ${item.trim()}:`, error);
+        }
+      });
     }
 
-    // Handle moving files using fs for both productImages and blogImages
-    // const moveFiles = (files, folder) => {
-    //   files.forEach((file) => {
-    //     const oldPath = path.join(__dirname, '..', 'tmp', file.filename);
-    //     const newPath = path.join(__dirname, '..', 'uploads', folder, file.filename);
+    // Update the product object with the new values
+    product.productName = productName ? productName : product.productName;
+    product.productSubDescription = productSubDescription ? productSubDescription : product.productSubDescription;
+    product.productDescription = productDescription ? productDescription : product.productDescription;
+    product.variant = variants.length > 0 ? variants : product.variant;
+    product.herbsId = parsedHerbsId.length > 0 ? parsedHerbsId : product.herbsId;
+    product.faqs = faqsArray.length > 0 ? faqsArray : product.faqs;
+    product.urls = urlsArray.length > 0 ? urlsArray : product.urls;
+    product.productImages = updatedProductImages.length > 0 ? updatedProductImages : product.productImages;
+    product.blogImages = updatedBlogImages.length > 0 ? updatedBlogImages : product.blogImages;
 
-    //     if (!fs.existsSync(path.dirname(newPath))) {
-    //       fs.mkdirSync(path.dirname(newPath), { recursive: true });
-    //     }
-
-    //     fs.renameSync(oldPath, newPath);
-    //   });
-    // };
-
-    // if (req.files['productImages']) {
-    //   moveFiles(req.files['productImages'], 'products');
-    // }
-
-    // if (req.files['blogImages']) {
-    //   moveFiles(req.files['blogImages'], 'blog');
-    // }
-
-    // Update product properties
-    product.productName = productName || product.productName;
-    product.productSubDescription = productSubDescription || product.productSubDescription;
-    product.productDescription = productDescription || product.productDescription;
-    product.variant = variants.length > 0 ? variants : product.variant; // Handle variants if provided
-    product.herbs = herbsArray;
-    product.herbsId = parsedHerbsId; // Add the parsed herbsId
-    product.faqs = faqsArray;
-    product.urls = urlsArray;
-    product.productImages = updatedProductImages;
-    product.blogImages = updatedBlogImages;
-
-    // Save updated product
+    // Save the updated product
     await product.save();
 
     res.status(200).json({
@@ -391,6 +418,8 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
     });
   }
 });
+
+
 
 
 // // Add product review
@@ -449,6 +478,18 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
 //     });
 //   }
 // });
+
+
+
+
+
+
+// Fixing __dirname issue for ES modules
+
+
+
+
+
 
 
 router.get("/delete-product/:id", async (req, res) => {

@@ -70,7 +70,7 @@ export default function AllHerbs() {
         <ToastContainer />
         <div className="bread">
             <div className="head">
-                <h4>All Product List</h4>
+                <h4>All Herbs For Natural List</h4>
             </div>
             <div className="links">
                 <Link to="/add-herbs" className="add-new">
@@ -104,7 +104,6 @@ export default function AllHerbs() {
                     <tr>
                         <th>S No.</th>
                         <th>Name</th>
-                        <th>Product Name</th>
                         <th>Image </th>
                         <th>Actions</th>
                     </tr>
@@ -127,7 +126,6 @@ export default function AllHerbs() {
                             <tr key={product._id}>
                                 <td>{index + 1}</td>
                                 <td>{product?.name}</td>
-                                <td>{product?.productId?.productName}</td>
                                 <td>
                                     {product.images?.map((image, imgIndex) => (
                                         <img

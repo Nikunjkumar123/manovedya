@@ -7,19 +7,19 @@ import "react-toastify/dist/ReactToastify.css";
 import { getData, postData } from "../../services/FetchNodeServices.js";
 
 const EditHerbs = () => {
-    const [herbs, setHerbs] = useState({ image: null, name: "", content: "", productId: "" });
+    const [herbs, setHerbs] = useState({ image: null, name: "", content: "", });
     const [isLoading, setIsLoading] = useState(false);
-    const [productList, setProductList] = useState([]);
+    // const [productList, setProductList] = useState([]);
     const navigate = useNavigate();
     const { id } = useParams();
 
     // Fetch Product Data
-    const fetchProductData = async () => {
-        const data = await getData("api/products/all-product");
-        if (data?.success) {
-            setProductList(data?.products);
-        }
-    };
+    // const fetchProductData = async () => {
+    //     const data = await getData("api/products/all-product");
+    //     if (data?.success) {
+    //         setProductList(data?.products);
+    //     }
+    // };
 
     // Fetch Herbs data for Editing
     const fetchHerbs = async () => {
@@ -36,7 +36,7 @@ const EditHerbs = () => {
     };
 
     useEffect(() => {
-        fetchProductData();
+        // fetchProductData();
         fetchHerbs();
     }, [id]);
 
@@ -61,35 +61,55 @@ const EditHerbs = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Ensure that image is selected
-        if (!herbs.image) {
-            alert("Please select an image before submitting.");
+        if (!herbs.content) {
+            alert("Please select description before submitting.");
+            setIsLoading(false);
+            return;
+        } else if (!herbs.name) {
+            alert("Please enter a name before submitting.");
             setIsLoading(false);
             return;
         }
 
-        const form = new FormData();
-        form.append("herbs", JSON.stringify(herbs)); // Send herb as a JSON string
-        if (herbs.image) {
-            form.append("herbsImage", herbs.image);
+        if (!herbs.image) {
+
+            try {
+                const response = await postData(`api/herbs/update-herbs-without-image/${id}`, herbs);
+                if (response?.status === true) {
+                    toast.success("Herbs updated successfully!");
+                    navigate("/All-Herbs-For-Natural");
+                } else {
+                    toast.error("Failed to update herbs. Please try again.");
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error("Error occurred while updating the herbs.");
+            } finally {
+                setIsLoading(false);
+            }
+        } else {
+            const form = new FormData();
+            form.append("herbs", JSON.stringify(herbs)); // Send herb as a JSON string
+            if (herbs.image) {
+                form.append("herbsImage", herbs.image);
+            }
+
+            try {
+                const response = await postData(`api/herbs/update-herbs/${id}`, form);
+                if (response?.status === true) {
+                    toast.success("Herbs updated successfully!");
+                    navigate("/All-Herbs-For-Natural");
+                } else {
+                    toast.error("Failed to update herbs. Please try again.");
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error("Error occurred while updating the herbs.");
+            } finally {
+                setIsLoading(false);
+            }
         }
 
-        try {
-            const response = await postData(`api/herbs/update-herbs/${id}`, form, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            if (response?.status === true) {
-                toast.success("Herbs updated successfully!");
-                navigate("/All-Herbs-For-Natural");
-            } else {
-                toast.error("Failed to update herbs. Please try again.");
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Error occurred while updating the herbs.");
-        } finally {
-            setIsLoading(false);
-        }
     };
 
     console.log("XXXXXXXXX", herbs);
@@ -133,7 +153,7 @@ const EditHerbs = () => {
                                 />
                             </div>
 
-                            <div className="col-md-4">
+                            {/* <div className="col-md-4">
                                 <label className="form-label">Select Product</label>
                                 <select
                                     name="product"
@@ -146,7 +166,7 @@ const EditHerbs = () => {
                                         <option key={idx} value={product?._id}>{product?.productName}</option>
                                     ))}
                                 </select>
-                            </div>
+                            </div> */}
 
                             <div className="col-md-12">
                                 <label className="form-label">For Information</label>

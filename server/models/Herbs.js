@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
 const herbsSchema = new mongoose.Schema({
-    productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true,
-    },
+    // productId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Product',
+    //     required: true,
+    // },
     name: {
         type: String,
         required: true,

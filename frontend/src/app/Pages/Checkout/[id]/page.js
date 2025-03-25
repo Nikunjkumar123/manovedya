@@ -15,11 +15,14 @@ import { useRazorpay } from "react-razorpay";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useRouter } from 'next/navigation';
+import { useDispatch } from "react-redux";
+import { login } from "../../../redux/slices/user-slice"
 
 const Page = ({ params }) => {
   const { error, Razorpay } = useRazorpay();
   const router = useRouter();
   const { id } = use(params);
+  const dispatch = useDispatch()
   const [isChecked, setIsChecked] = useState(false);
   const [cart, setCart] = useState(null)
   const [formData, setFormData] = useState({ email: "", firstName: "", lastName: "", country: "", address: "", city: "", state: "", pinCode: "", phone: "", consent: false, saveInfo: false, paymentMethod: "Online", billingAddress: "", });
@@ -36,9 +39,12 @@ const Page = ({ params }) => {
     const user_data = JSON.parse(data);
     setUser_data(user_data)
   }, [])
+
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXX", id)
+
   const fetchCart = async () => {
     const result = await getData(`api/cart/get-cart/${id}`);
-    // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXX", result)
+    // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXcart", result)
     if (result?.success === true) {
       setCart(result?.cart);
     }
@@ -52,8 +58,9 @@ const Page = ({ params }) => {
     const result = await postData(`api/cart/delete-cart/${cart?._id}`);
     if (result?.success === true) {
       fetchCart();
-      // window.location.href = '/'
+      dispatch(login("result"))
       router.push('/')
+
     }
   };
 
@@ -72,7 +79,7 @@ const Page = ({ params }) => {
         city: user_data?.address?.city
       });
     }
-  }, []);
+  }, [user_data]);
 
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
@@ -182,7 +189,6 @@ const Page = ({ params }) => {
 
     console.log("Payload to be sent:", formData);
     // setIsLoading(true);
-
 
     try {
       if (formData.paymentMethod === 'COD') {

@@ -7,8 +7,8 @@ const blogSchema = new mongoose.Schema({
   description: { type: String, required: true },  // Blog description (could be HTML)
   blogImage: { type: String, required: true },  // Image URL or File Path
   date: { type: Date, default: Date.now },  // Date of the blog post
-  additionalDetails: { type: String },  // Additional details about the blog
-  isActive: { type: Boolean, default: false }, 
+  additionalDetails: { type: String, trim: true },  // Additional details about the blog
+  isActive: { type: Boolean, default: false },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag', trim: true }],
   views: { type: Number, default: 0, trim: true }
 }, { timestamps: true });

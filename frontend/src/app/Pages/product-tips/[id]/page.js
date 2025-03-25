@@ -281,12 +281,13 @@ const page = ({ params }) => {
                         </div>
 
                         <h5 className="mt-4">
-                            Complete Buyer’s Guide: Choosing the Right Calm and Sleep Aid
+                            Complete Buyer’s Guide: Choosing the Right {categories?.categoryName}
                         </h5>
                         <p>
-                            Finding the perfect solution for your sleep and relaxation needs is
+                            {Parser().parse(categories?.description)}
+                            {/* Finding the perfect solution for your sleep and relaxation needs is
                             essential for a healthy and balanced life. Here’s a guide to help
-                            you decide which product suits you best.
+                            you decide which product suits you best. */}
                         </p>
                     </div>
                 </div>
@@ -297,28 +298,36 @@ const page = ({ params }) => {
                 <div className="container">
                     <div className="row">
                         {wellnessKitss?.map((kit, index) => (
-                            <div className="col-md-6 col-lg-4 col-6 mb-4" key={index}>
-                                <div className="product-card">
+                            <div className="col-md-6 col-6 col-lg-4" key={index}>
+                                <div data-aos="zoom-in" className="product-card" style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '8px', padding: '5px' }}>
                                     <div className="row align-items-center">
                                         <div className="col-md-4">
-                                            <img
-                                                src={`${serverURL}/uploads/products/${kit?.productImages[0]}`}
-                                                alt={kit.productName}
-                                                className="card-img-top"
-                                            />
+                                            <Link href={`/Pages/products/${kit?._id}`}>
+                                                <img
+                                                    src={`${serverURL}/uploads/products/${kit?.productImages[0]}`}
+                                                    alt={kit?.title}
+                                                    className="card-img-top"
+                                                    width={200}
+                                                    height={200}
+                                                    style={{ cursor: "pointer", borderRadius: '8px' }}
+                                                />
+                                            </Link>
                                         </div>
                                         <div className="col-md-8">
-                                            <div className="product-card-details">
-                                                <h5>{kit?.productName}</h5>
-                                                <ul>
-                                                    {Parser().parse(kit?.productSubDescription)}
-                                                </ul>
-                                                {/* <ul>
-                                                    {kit?.description?.map((item, i) => (
-                                                        <li key={i}>{item}</li>
-                                                    ))}
-                                                </ul> */}
-                                                <p className="m-0">
+                                            <div className="product-card-details" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingLeft: '10px' }}>
+                                                <h5 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '10px' }}>{kit?.productName}</h5>
+                                                <div style={{
+                                                    fontSize: '0.8rem',
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitLineClamp: 3,  // Limit the text to 3 lines
+                                                    WebkitBoxOrient: 'vertical',  // Specifies the box orientation to be vertical
+                                                    textOverflow: 'ellipsis',
+                                                    marginBottom: '10px'
+                                                }}>
+                                                    {Parser().parse(kit?.productDescription)}
+                                                </div>
+                                                <p className="m-0" style={{ fontSize: '1rem', color: '#000' }}>
                                                     <strong>₹ {kit?.variant[0]?.price}</strong>
                                                 </p>
                                             </div>

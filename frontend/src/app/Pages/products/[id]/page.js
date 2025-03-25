@@ -24,9 +24,12 @@ import { getData, postData, serverURL } from "@/app/services/FetchNodeServices";
 import { Parser } from "html-to-react";
 import Swal from "sweetalert2";
 import { useRouter } from 'next/navigation';
+import { useDispatch } from "react-redux";
+import { login } from '../../../redux/slices/user-slice'
 
 const Page = ({ params }) => {
   // Unwrap the params with React.use()
+  const dispatch = useDispatch()
   const { id } = use(params);
   const { name } = use(params);
   const router = useRouter();
@@ -64,6 +67,7 @@ const Page = ({ params }) => {
     setSelectedIndex(index);
     localStorage.setItem("productItem", JSON.stringify(item))
     // console.log("item", item)
+    // dispatch(login(item));
     setBtn(true)
   };
 
@@ -140,6 +144,8 @@ const Page = ({ params }) => {
       if (result?.success === true) {
         console.log("result", result);
         setCart(result?.cart)
+        /////hedar refrsh////////
+        dispatch(login(result?.cart));
         Swal.fire({
           title: "Item Added!",
           text: "Your item has been added to the cart.",
@@ -147,7 +153,9 @@ const Page = ({ params }) => {
           confirmButtonText: "Okay",
         }).then(() => {
           setButtonText("Go to Cart");
+          // router.reload()
         });
+
       } else {
         Swal.fire({
           title: "Item Added!",
@@ -230,7 +238,7 @@ const Page = ({ params }) => {
             <div className="col-md-6">
               <div className="product-details">
                 <h1>{product.productName}</h1>
-                <p className="product-detail-desc">{Parser().parse(product?.productDescription)}</p>
+                <p className="product-detail-desc">{Parser().parse(product?.productSubDescription)}</p>
 
                 {/* Price & Rating */}
                 <div className="product-price-rating">
@@ -253,9 +261,7 @@ const Page = ({ params }) => {
 
                 {/* Features List */}
                 <p >Helping In</p>
-                <ul>
-                  {Parser().parse(product?.productSubDescription)}
-                </ul>
+                {Parser().parse(product?.productDescription)}
 
                 {/* Pricing Options */}
                 <hr />

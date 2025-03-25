@@ -35,14 +35,14 @@ router.post('/create-newsletter', async (req, res) => {
     console.log("gg", req.body)
 
     if (!name || !email || !phone) {
-        return res.status(400).json({ error: 'All fields are required' });
+        return res.status(200).json({ error: 'All fields are required' });
     }
 
     try {
         // Check if the email already exists
         const existingSubscriber = await NewsLetter.findOne({ email });
         if (existingSubscriber) {
-            return res.status(400).json({ error: 'This email is already subscribed' });
+            return res.status(200).json({ success: false, error: 'This email is already subscribed' });
         }
 
         // Create a new Newsletter subscription

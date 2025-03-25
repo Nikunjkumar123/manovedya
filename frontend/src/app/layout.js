@@ -9,8 +9,9 @@ import "slick-carousel/slick/slick-theme.css";
 import "aos/dist/aos.css"; // Import AOS CSS from node_modules
 import { useEffect } from "react";
 import Aos from "aos";
+import ReduxProvider from "./Component/reduxProvider/ReduxProvider";
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children, ref }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       Aos.init({
@@ -38,9 +39,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <ReduxProvider>
+          <Header />
+          {children}
+          <Footer />
+        </ReduxProvider>
 
         {/* Load Bootstrap JavaScript */}
         <Script

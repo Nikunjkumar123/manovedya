@@ -87,9 +87,17 @@ const Page = () => {
                   </Link>
                   <div className="product-slider-details">
                     <h5 className="product-slider-name" style={{ height: '4vh' }}>{item?.productName}</h5>
-                    <ul style={{ height: '10vh' }}>
+                    <div style={{
+                      fontSize: '0.8rem',
+                      display: '-webkit-box',
+                      overflow: 'hidden',
+                      WebkitLineClamp: 3,  // Limit the text to 3 lines
+                      WebkitBoxOrient: 'vertical',  // Specifies the box orientation to be vertical
+                      textOverflow: 'ellipsis',
+                      marginBottom: '10px'
+                    }}>
                       {Parser()?.parse(item?.productSubDescription)}
-                    </ul>
+                    </div>
                     <p className="product-slider-desc">{item.desc}</p>
                     <div className="product-slider-footer">
                       <p className="product-slider-price">₹ {item?.variant[0]?.price}</p>

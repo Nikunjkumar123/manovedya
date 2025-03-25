@@ -67,7 +67,7 @@ router.post('/create-order', async (req, res) => {
       couponDiscount
     } = req.body;
 
-    console.log("BODY:BODY:", req.body);
+    console.log("BODY:BODY:BODYBODY:BODY:BODY", req.body);
 
     if (!email || !name || !phone || !address || !paymentMethod || !totalAmount || !shippingAmount) {
       return res.status(400).json({ message: 'Missing required fields' });

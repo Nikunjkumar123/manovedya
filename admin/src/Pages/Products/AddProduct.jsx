@@ -245,6 +245,30 @@ const AddProduct = () => {
               ))}
             </select>
           </div>
+
+          <div className="col-md-12">
+            <label htmlFor="productSubDescription" className="form-label">
+              Product sub Description<sup className="text-danger">*</sup>
+            </label>
+            <textarea
+              name="productSubDescription"
+              rows={1}
+              className="form-control"
+              id="productSubDescription"
+              placeholder="Product Sub Description"
+              value={formData.productSubDescription}
+              onChange={handleChange}
+              required
+            />
+            {/* <JoditEditor
+              className="form-control"
+              placeholder="product Sub Description"
+              name="productSubDescription"
+              value={formData.productSubDescription}
+              onChange={(newValue) => handleJoditShortChange(newValue, 'productSubDescription')}
+            /> */}
+          </div>
+
           {/* Product Description (Jodit Editor) */}
           <div className="col-md-12">
             <label htmlFor="productDescription" className="form-label">
@@ -258,29 +282,8 @@ const AddProduct = () => {
               onChange={(newValue) => handleJoditChange(newValue, 'productDescription')}
             />
           </div>
-          {/* Product Sub Description */}
-          <div className="col-md-12">
-            <label htmlFor="productSubDescription" className="form-label">
-              Product Sub Description<sup className="text-danger">*</sup>
-            </label>
-            {/* <textarea
-              name="productSubDescription"
-              rows={1}
-              className="form-control"
-              id="productSubDescription"
-              placeholder="Product Sub Description"
-              value={formData.productSubDescription}
-              onChange={handleChange}
-              required
-            /> */}
-            <JoditEditor
-              className="form-control"
-              placeholder="product Sub Description"
-              name="productSubDescription"
-              value={formData.productSubDescription}
-              onChange={(newValue) => handleJoditShortChange(newValue, 'productSubDescription')}
-            />
-          </div>
+
+
 
 
 
@@ -459,7 +462,7 @@ const AddProduct = () => {
 
           {/* URL */}
           <div className="mt-4">
-            <h2>Add Product URLs</h2>
+            <h2>Add Video URLs</h2>
             {formData?.urls?.map((urlItem, index) => (
               <div className="row mb-2" key={index}>
                 <div className="col-md-10">

@@ -1,6 +1,12 @@
+import e from "express";
 import mongoose from "mongoose";
 
 const consultationSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     patientName: {
         type: String,
         required: true
@@ -33,6 +39,15 @@ const consultationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    amount: {
+        type: Number,
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'completed', 'cancelled'],
+        default: 'pending'
+    }
 }, { timestamps: true });
 
 const Consultation = mongoose.model("Consultation", consultationSchema);

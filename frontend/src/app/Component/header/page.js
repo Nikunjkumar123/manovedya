@@ -7,16 +7,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { getData, postData } from "@/app/services/FetchNodeServices";
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from '../../redux/slices/user-slice'
 
 const Page = () => {
+  // State Variables
+  // const selector = useSelector
+  const router = useRouter();
   const [cartSidebar, setCartSidebar] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [cart, setCart] = useState([]);
-  const [user_token, setUserToken] = useState(null);
-  const [User_data, setUserData] = useState(null);
-  const [id, setId] = useState(null);
+  const [userToken, setUserToken] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [couponTitle, setCouponTitle] = useState([]);
-
+  const dispatch = useDispatch()
+  const { carts } = useSelector(state => state.user);
+  // console.log("gggggg", carts)
+  // Fetch user data from localStorage
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("User_data");
@@ -24,17 +33,16 @@ const Page = () => {
 
     setUserToken(token);
     setUserData(parsedUser);
-    setId(parsedUser?._id);
+    setUserId(parsedUser?._id);
   }, []);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  // Cart Sidebar toggle handler
+  const cartToggle = () => setCartSidebar(!cartSidebar);
 
-  const cartToggle = () => {
-    setCartSidebar(!cartSidebar);
-  };
+  // Sidebar toggle handler
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  // Navigation menu items
   const navItems = [
     { name: "Home", link: "/" },
     { name: "About Us", link: "/Pages/aboutUs" },
@@ -45,61 +53,51 @@ const Page = () => {
       name: "Consultation & Customized Solution",
       link: "/Pages/consultationCustomizedSolution",
     },
-    { name: "Track Your Order", link: `/Pages/trackOrder/${id}` },
+    { name: "Track Your Order", link: `/Pages/trackOrder/${userId}` },
   ];
 
-  const toggleDecrement = (item) => {
-    if (item.quantity > 1) {
-      updateCartQuantity(item, item.quantity - 1);
-    }
+  // Fetch Cart data
+  useEffect(() => {
+    if (carts || userId) fetchCart();
+  }, [carts, userId]);
+
+  const fetchCart = async () => {
+    const result = await getData(`api/cart/get-cart/${userId}`);
+    if (result?.success) setCart(result?.cart?.items);
   };
 
-  const toggleIncrement = (item) => {
-    updateCartQuantity(item, item.quantity + 1);
-  };
-
+  // Cart quantity update
   const updateCartQuantity = async (item, newQuantity) => {
     const updatedItem = { ...item, quantity: newQuantity };
     const body = {
-      userId: User_data?._id,
+      userId: userData?._id,
       itemId: item?._id,
       quantity: newQuantity,
     };
     const result = await postData("api/cart/update", body);
-    if (result?.success === true) {
-      setCart(result?.cart?.items);
-    }
+    if (result?.success) setCart(result?.cart?.items);
   };
 
-  const fetchCart = async () => {
-    const result = await getData(`api/cart/get-cart/${id}`);
-    if (result?.success === true) {
-      setCart(result?.cart?.items);
-    }
-  };
-
-  useEffect(() => {
-    if (id) {
-      fetchCart();
-    }
-  }, [id]);
 
   const handleAddToCart = async (item, quantity) => {
-    if (User_data) {
+    if (userData) {
       const body = {
-        userId: User_data?._id,
+        userId: userData?._id,
         itemId: item?._id,
         quantity,
       };
       const result = await postData("api/cart/update", body);
-      if (result?.success === true) {
+      if (result?.success) {
         setCart(result?.cart?.items);
+        dispatch(login(result?.cart));
         Swal.fire({
           title: "Item Added!",
           text: "Your item has been added to the cart.",
           icon: "success",
           confirmButtonText: "Okay",
         });
+        // window.location.reload()
+        // router.push(`/Pages/cart/${userData?._id}`)
       } else {
         Swal.fire({
           title: "Item Not Added!",
@@ -111,14 +109,16 @@ const Page = () => {
     }
   };
 
+  // Handle item removal from cart
   const handleRemoveItem = async (item) => {
     const body = {
-      userId: User_data?._id,
+      userId: userData?._id,
       itemId: item?._id,
     };
     const result = await postData("api/cart/delete-from-cart", body);
-    if (result?.success === true) {
+    if (result?.success) {
       setCart(result?.cart?.items);
+      dispatch(login(result?.cart));
       Swal.fire({
         title: "Item Removed!",
         text: "Your item has been removed from the cart.",
@@ -135,52 +135,50 @@ const Page = () => {
     }
   };
 
+  // Calculate total price of items in cart
   const calculateTotal = () =>
     cart?.reduce((total, item) => total + item.price * item.quantity, 0);
 
+  // Calculate tax (18%)
   const calculateTax = () => {
     const totalPrice = calculateTotal();
-    return (totalPrice * 0.18).toFixed(2); // 18% tax
+    return (totalPrice * 0.18).toFixed(2);
   };
 
+  // Calculate total with tax
   const totalWithTax = () => {
     const totalPrice = calculateTotal();
     const tax = totalPrice * 0.18;
-    return (tax + totalPrice).toFixed(2); // Return as string to avoid floating point issues
+    return (tax + totalPrice).toFixed(2);
   };
 
+  // Fetch coupon data
   useEffect(() => {
-    try {
-      const fetchCoupon = async () => {
-        const status = true;
-        const response = await postData(
-          `api/coupon/get-coupon-by-status`,
-          { status }
-        );
-        if (response?.success === true) {
-          setCouponTitle(response?.coupons || []);
-        }
-      };
-      fetchCoupon();
-    } catch (e) {
-      console.log(e);
-    }
+    const fetchCoupon = async () => {
+      try {
+        const response = await postData("api/coupon/get-coupon-by-status", {
+          status: true,
+        });
+        if (response?.success) setCouponTitle(response?.coupons || []);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchCoupon();
   }, []);
 
   return (
     <>
+      {/* Top Nav for Coupons */}
       <div className="top-nav">
         <p>
-          {couponTitle?.map((item, index) => {
-            return (
-              <div key={index}>
-                {item?.couponTitle}
-              </div>
-            );
-          })}
+          {couponTitle?.map((item, index) => (
+            <div key={index}>{item?.couponTitle}</div>
+          ))}
         </p>
       </div>
 
+      {/* Main Navbar */}
       <div className="nav-main">
         <div className="container">
           <div className="nav-logo-section">
@@ -196,7 +194,7 @@ const Page = () => {
                 <Image src={logo} width={200} alt="logo-main" />
               </Link>
             </div>
-            {user_token ? (
+            {userToken ? (
               <div className="login-cart">
                 <Link href="/Pages/User_Profile">Profile</Link>
                 <i onClick={cartToggle} style={{ cursor: "pointer" }} className="bi bi-cart3"></i>
@@ -217,11 +215,10 @@ const Page = () => {
           <h4>SHOPPING CART</h4>
           <span onClick={cartToggle}><i className="bi bi-x-octagon"></i></span>
         </div>
-
         <div className="shopping-cart">
           <div className="cart-item">
             {cart?.map((item) => (
-              <div key={item._id} style={{ flexDirection: 'column' }}>
+              <div key={item._id} style={{ flexDirection: "column" }}>
                 <p className="m-0"><b>{item?.product?.productName}</b></p>
                 <p>{item?.product?.variant[0].day} | {item?.product?.variant[0].bottle} | ₹5 / tablet</p>
                 <p className="bestseller">⭐ Bestseller</p>
@@ -229,9 +226,9 @@ const Page = () => {
                   <span className="original-price">₹{item?.product?.variant[0]?.price * item?.quantity}</span> ₹{item?.price * item?.quantity}
                 </p>
                 <div className="quantity">
-                  <button onClick={() => toggleDecrement(item)} className="decrease">-</button>
+                  <button disabled={item?.quantity <= 1} onClick={() => handleAddToCart(item, item.quantity - 1)} className="decrease">-</button>
                   <span className="count">{item?.quantity}</span>
-                  <button onClick={() => toggleIncrement(item)} className="increase">+</button>
+                  <button onClick={() => handleAddToCart(item, item.quantity + 1)} className="increase">+</button>
                 </div>
                 <button onClick={() => handleRemoveItem(item)} className="delete-btn mt-2">
                   <i className="bi bi-trash" />
@@ -239,9 +236,8 @@ const Page = () => {
               </div>
             ))}
           </div>
-
           <div className="cart-footer">
-            <Link href={`/Pages/Checkout/${User_data?._id}`}>
+            <Link href={`/Pages/Checkout/${userData?._id}`}>
               <button className="checkout-btn">CHECKOUT</button>
             </Link>
             <Link href={`/Pages/products`}>
