@@ -33,6 +33,7 @@ import herbsRoutes from "./routes/herb.js";
 import consultWithDoctorRoutes from "./routes/consultWithDoctor.js";
 import couponRoutes from "./routes/coupon.js";
 import newsLetterRoutes from "./routes/newsLetter.js";
+import consultVideoUrlRoutes from "./routes/consultVideoUrl.js"
 
 dotenv.config();
 
@@ -93,7 +94,8 @@ app.use("/api/home", homeRoutes);
 app.use("/api/herbs", herbsRoutes);
 app.use("/api/consultation", consultWithDoctorRoutes);
 app.use("/api/coupon", couponRoutes);
-app.use("/api/newsletter", newsLetterRoutes);
+app.use("/api/newsletter", newsLetterRoutes)
+app.use("/api/url", consultVideoUrlRoutes);
 
 // Database connection
 // mongoose.connect(process.env.MONGODB_URI)

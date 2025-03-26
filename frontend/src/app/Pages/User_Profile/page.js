@@ -12,6 +12,7 @@ export default function UserProfile() {
     const [user_data, setUser_data] = useState("");
     const [appointments, setAppointments] = useState([]);
 
+    // Fetch user data from localStorage
     useEffect(() => {
         const data = localStorage.getItem("User_data");
         if (data) {
@@ -20,6 +21,7 @@ export default function UserProfile() {
         }
     }, []);
 
+    // Fetch appointments if user data is available
     useEffect(() => {
         const fetchAppointments = async () => {
             if (user_data?._id) {
@@ -40,6 +42,7 @@ export default function UserProfile() {
         fetchAppointments();
     }, [user_data]);
 
+    // Display account details
     const AccountDetails = () => {
         return (
             <div className={styles.table}>
@@ -80,6 +83,7 @@ export default function UserProfile() {
         );
     };
 
+    // Logout function with confirmation
     const handleLOGOUT = async () => {
         const confirmDelete = await Swal.fire({
             title: "Are you sure?",
@@ -88,7 +92,7 @@ export default function UserProfile() {
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!",
+            confirmButtonText: "Yes, log out!",
         });
 
         if (confirmDelete.isConfirmed) {
@@ -96,7 +100,7 @@ export default function UserProfile() {
                 localStorage.removeItem("User_data");
                 localStorage.removeItem("token");
                 router?.push("/");
-                Swal.fire("Deleted!", "You have logged out.", "success");
+                Swal.fire("Logged out!", "You have been logged out.", "success");
             } catch (error) {
                 Swal.fire("Error!", "There was an error logging out.", "error");
                 console.error("Error logging out:", error);
@@ -104,6 +108,7 @@ export default function UserProfile() {
         }
     };
 
+    // Display appointment details
     const AppointmentDetails = () => {
         if (appointments.length === 0) {
             return (
@@ -118,15 +123,14 @@ export default function UserProfile() {
             <div className={styles.table}>
                 <h2 className={styles.tableHeader}>Appointments</h2>
                 <table className={styles.tableContent}>
-
-                    {appointments?.map((appointment, index) => (
-                        <div style={{ gap: 10, marginBottom: 10, boxShadow: 'rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px', padding: 10 }}>
+                    {appointments?.map((appointment) => (
+                        <div style={{ gap: 10, marginBottom: 10, boxShadow: 'rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px', padding: 10 }} key={appointment._id}>
                             <tbody>
-                                <tr className={styles.tableRow} key={appointment._id}>
+                                <tr className={styles.tableRow}>
                                     <td><strong>Patient Name:</strong></td>
                                     <td>{appointment?.patientName}</td>
                                 </tr>
-                                <tr className={styles.tableRow} key={appointment._id}>
+                                <tr className={styles.tableRow}>
                                     <td><strong>Consultation Date:</strong></td>
                                     <td>{new Date(appointment?.scheduleCalendar).toLocaleDateString()}</td>
                                 </tr>
@@ -153,27 +157,32 @@ export default function UserProfile() {
                             </tbody>
                         </div>
                     ))}
-
                 </table>
             </div>
         );
     };
 
+    // Render content based on the selected section
     const renderContent = () => {
         switch (selectedSection) {
             case "dashboard":
                 return <div>{AccountDetails()}</div>;
             case "logout":
-                return <div>{handleLOGOUT()}</div>;
+                return (
+                    <div>
+                        {handleLOGOUT()}
+                    </div>
+                );
             case "appointment":
                 return <div>{AppointmentDetails()}</div>;
             default:
-                return (
-                    <div>
-                        <p>Please select a section.</p>
-                    </div>
-                );
+                return <div>Please select a section.</div>;
         }
+    };
+
+    // Handle button click for active section highlighting
+    const handleSectionClick = (section) => {
+        setSelectedSection(section);
     };
 
     return (
@@ -181,26 +190,26 @@ export default function UserProfile() {
             <div className={styles.profileCard}>
                 <div className={styles.sidebar}>
                     <div
-                        className={`${styles.sidebarItem} ${styles.dashboardBtn}`}
-                        onClick={() => setSelectedSection("dashboard")}
+                        className={`${styles.sidebarItem} ${selectedSection === "dashboard" ? styles.active : ""}`}
+                        onClick={() => handleSectionClick("dashboard")}
                     >
                         Dashboard
                     </div>
                     <div
-                        className={styles.sidebarItem}
+                        className={`${styles.sidebarItem} ${selectedSection === "order" ? styles.active : ""}`}
                         onClick={() => router.push(`/Pages/trackOrder/${user_data?._id}`)}
                     >
                         Your Orders
                     </div>
                     <div
-                        className={styles.sidebarItem}
-                        onClick={() => setSelectedSection("appointment")}
+                        className={`${styles.sidebarItem} ${selectedSection === "appointment" ? styles.active : ""}`}
+                        onClick={() => handleSectionClick("appointment")}
                     >
                         Your Appointments
                     </div>
                     <div
-                        className={`${styles.sidebarItem} ${styles.logoutBtn}`}
-                        onClick={() => setSelectedSection("logout")}
+                        className={`${styles.sidebarItem} ${selectedSection === "logout" ? styles.active : ""}`}
+                        onClick={() => handleSectionClick("logout")}
                     >
                         Log Out
                     </div>

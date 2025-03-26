@@ -4,6 +4,7 @@ import "./header.css";
 import logo from "../../Images/logo.png";
 import logo1 from "../../Images/logo1.png";
 import Image from "next/image";
+import Slider from "react-slick";
 import Link from "next/link";
 import { getData, postData } from "@/app/services/FetchNodeServices";
 import Swal from "sweetalert2";
@@ -34,7 +35,7 @@ const Page = () => {
     setUserToken(token);
     setUserData(parsedUser);
     setUserId(parsedUser?._id);
-  }, []);
+  }, [carts]);
 
   // Cart Sidebar toggle handler
   const cartToggle = () => setCartSidebar(!cartSidebar);
@@ -53,7 +54,7 @@ const Page = () => {
       name: "Consultation & Customized Solution",
       link: "/Pages/consultationCustomizedSolution",
     },
-    { name: "Track Your Order", link: `/Pages/trackOrder/${userId}` },
+    // { name: "Track Your Order", link: `/Pages/trackOrder/${userId}` },
   ];
 
   // Fetch Cart data
@@ -66,17 +67,17 @@ const Page = () => {
     if (result?.success) setCart(result?.cart?.items);
   };
 
-  // Cart quantity update
-  const updateCartQuantity = async (item, newQuantity) => {
-    const updatedItem = { ...item, quantity: newQuantity };
-    const body = {
-      userId: userData?._id,
-      itemId: item?._id,
-      quantity: newQuantity,
-    };
-    const result = await postData("api/cart/update", body);
-    if (result?.success) setCart(result?.cart?.items);
-  };
+  // // Cart quantity update
+  // const updateCartQuantity = async (item, newQuantity) => {
+  //   const updatedItem = { ...item, quantity: newQuantity };
+  //   const body = {
+  //     userId: userData?._id,
+  //     itemId: item?._id,
+  //     quantity: newQuantity,
+  //   };
+  //   const result = await postData("api/cart/update", body);
+  //   if (result?.success) setCart(result?.cart?.items);
+  // };
 
 
   const handleAddToCart = async (item, quantity) => {
@@ -136,21 +137,21 @@ const Page = () => {
   };
 
   // Calculate total price of items in cart
-  const calculateTotal = () =>
-    cart?.reduce((total, item) => total + item.price * item.quantity, 0);
+  // const calculateTotal = () =>
+  //   cart?.reduce((total, item) => total + item.price * item.quantity, 0);
 
   // Calculate tax (18%)
-  const calculateTax = () => {
-    const totalPrice = calculateTotal();
-    return (totalPrice * 0.18).toFixed(2);
-  };
+  // const calculateTax = () => {
+  //   const totalPrice = calculateTotal();
+  //   return (totalPrice * 0.18).toFixed(2);
+  // };
 
-  // Calculate total with tax
-  const totalWithTax = () => {
-    const totalPrice = calculateTotal();
-    const tax = totalPrice * 0.18;
-    return (tax + totalPrice).toFixed(2);
-  };
+  // // Calculate total with tax
+  // const totalWithTax = () => {
+  //   const totalPrice = calculateTotal();
+  //   const tax = totalPrice * 0.18;
+  //   return (tax + totalPrice).toFixed(2);
+  // };
 
   // Fetch coupon data
   useEffect(() => {
@@ -167,14 +168,28 @@ const Page = () => {
     fetchCoupon();
   }, []);
 
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    // speed: 100,
+    autoplaySpeed: 5000,
+    cssEase: "linear"
+  };
+
   return (
     <>
       {/* Top Nav for Coupons */}
       <div className="top-nav">
-        <p>
-          {couponTitle?.map((item, index) => (
-            <div key={index}>{item?.couponTitle}</div>
-          ))}
+        <p style={{ width: '100%', overflow: 'hidden' }}>
+          <Slider {...settings}>
+            {couponTitle?.map((item, index) => (
+              <div key={index}>{item?.couponTitle}</div>
+            ))}
+          </Slider>
         </p>
       </div>
 

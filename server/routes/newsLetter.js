@@ -45,6 +45,11 @@ router.post('/create-newsletter', async (req, res) => {
             return res.status(200).json({ success: false, error: 'This email is already subscribed' });
         }
 
+        const existingphone = await NewsLetter.findOne({ phone });
+        if (existingphone) {
+            return res.status(200).json({ success: false, error: 'This Phone Number is already subscribed' });
+        }
+
         // Create a new Newsletter subscription
         const newSubscription = new NewsLetter({
             name,

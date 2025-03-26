@@ -495,13 +495,13 @@ router.post('/verify-otp-for-user-signup', async (req, res) => {
     const { fullName, mobile, email, otp, password } = req.body;
 
     if (!email || !otp || !password) {
-      return res.status(400).json({ status: false, message: "All fields are required" });
+      return res.status(200).json({ status: false, message: "All fields are required" });
     }
 
     const otpMatch = await Otp.findOne({ email: email, otp: otp });
 
     if (!otpMatch) {
-      return res.status(400).json({ status: false, message: "Invalid OTP" });
+      return res.status(200).json({ status: false, message: "Invalid OTP" });
     }
 
     if (otpMatch.otpExpiry < Date.now()) {
@@ -533,13 +533,13 @@ router.post('/user-login', async (req, res) => {
 
     const user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(401).json({ status: false, message: "User Not Found" });
+      return res.status(200).json({ status: false, message: "User Not Found" });
     }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-      return res.status(401).json({ status: false, message: "Incorrect Password" });
+      return res.status(200).json({ status: false, message: "Incorrect Password" });
     }
 
     // Create a JWT token

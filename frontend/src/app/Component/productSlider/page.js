@@ -63,6 +63,13 @@ const Page = () => {
     ],
   };
 
+  const truncateText = (text, maxLength = 100) => {
+    if (text?.length > maxLength) {
+      return text.substring(0, maxLength) + "...";
+    }
+    return text;
+  }
+
   return (
     <>
       <section className="product-slider">
@@ -75,7 +82,6 @@ const Page = () => {
           <div className="slider-container">
             <Slider {...settings}>
               {products?.map((item, index) => (
-
                 <div data-aos="zoom-out-up" key={index} className="product-slider-card">
                   <Link href={`/Pages/products/${item?._id}`}>
                     <img
@@ -86,18 +92,12 @@ const Page = () => {
                     />
                   </Link>
                   <div className="product-slider-details">
-                    <h5 className="product-slider-name" style={{ height: '4vh' }}>{item?.productName}</h5>
-                    <div style={{
-                      fontSize: '0.8rem',
-                      display: '-webkit-box',
-                      overflow: 'hidden',
-                      WebkitLineClamp: 3,  // Limit the text to 3 lines
-                      WebkitBoxOrient: 'vertical',  // Specifies the box orientation to be vertical
-                      textOverflow: 'ellipsis',
-                      marginBottom: '10px'
-                    }}>
-                      {Parser()?.parse(item?.productSubDescription)}
-                    </div>
+                    <h5 className="product-name" style={{ height: '5vh' }}>{truncateText(item?.productName, 18)}</h5>
+                    <p className="product-desc" style={{ height: '10vh', display: '-webkit-flex', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: ' ellipsis', top: 5 }} >
+
+                      {Parser()?.parse(truncateText(item?.productSubDescription, 90))}
+
+                    </p>
                     <p className="product-slider-desc">{item.desc}</p>
                     <div className="product-slider-footer">
                       <p className="product-slider-price">₹ {item?.variant[0]?.price}</p>

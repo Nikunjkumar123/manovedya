@@ -103,7 +103,7 @@ router.get('/all-product', async (req, res) => {
 
     // Get total count for pagination
     const total = await Product.countDocuments(filter);
-    console.log("XXXXXXXXXXXXXXX", products)
+    // console.log("XXXXXXXXXXXXXXX", products)
     res.status(200).json({
       success: true,
       products,
@@ -174,8 +174,8 @@ router.post('/create-product', upload.fields([{ name: 'productImages', maxCount:
       herbsId,
     } = req.body;
 
-    console.log("Incoming Data:", req.body);
-    console.log("Received files:", req?.files);
+    // console.log("Incoming Data:", req.body);
+    // console.log("Received files:", req?.files);
 
     // Parse JSON strings if they are provided as strings
     const parsedVariants = typeof Variant === 'string' ? JSON.parse(Variant) : Variant;
@@ -290,7 +290,7 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
     const parsedHerbs = herbs ? parseJson(herbs) : [];
     const parsedFaqs = faqs ? parseJson(faqs) : [];
     const parsedUrls = urls ? parseJson(urls) : [];
-    console.log("parsedHerbs bbbbbbbbbbbb", parsedHerbs);
+    console.log("parsedHerbs bbbbbbbbbbbb", parsedVariants);
 
     let parsedHerbsId = [];
     if (herbsId) {
@@ -299,7 +299,7 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
 
     const product = await Product.findById(req.params.id);
     if (!product) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Product not found',
       });
@@ -342,13 +342,13 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
     let updatedProductImages = product.productImages || [];
     if (productImages.length > 0) {
       if (oldProductImage && !productImages.some(newImage => oldProductImage.includes(newImage))) {
-        console.log(`Deleting old product images: ${oldProductImage}`);
+        // console.log(`Deleting old product images: ${oldProductImage}`);
         oldProductImage.split(",").forEach(item => {
           const filePath = `uploads/products/${item.trim()}`;
           try {
             if (fs.existsSync(filePath)) {
               fs.unlinkSync(filePath);
-              console.log(`Deleted old product image: ${item.trim()}`);
+              // console.log(`Deleted old product image: ${item.trim()}`);
             }
           } catch (error) {
             console.error(`Error deleting old product image ${item.trim()}:`, error);
@@ -360,15 +360,15 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
 
     // Handling blog image deletions and updates
     let updatedBlogImages = product.blogImages || [];
-    if (blogImages.length > 0) {
+    if (blogImages.length > 0 ) {
       if (oldBlogImage && !blogImages.some(newImage => oldBlogImage.includes(newImage))) {
-        console.log(`Deleting old blog images: ${oldBlogImage}`);
+        // console.log(`Deleting old blog images: ${oldBlogImage}`);
         oldBlogImage.split(",").forEach(item => {
           const filePath = `uploads/products/${item.trim()}`;
           try {
             if (fs.existsSync(filePath)) {
               fs.unlinkSync(filePath);
-              console.log(`Deleted old blog image: ${item.trim()}`);
+              // console.log(`Deleted old blog image: ${item.trim()}`);
             }
           } catch (error) {
             console.error(`Error deleting old blog image ${item.trim()}:`, error);
@@ -377,17 +377,17 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
       }
       updatedBlogImages = [...blogImages];
     } else if (oldBlogImage) {
-      oldBlogImage.split(",").forEach(item => {
-        const filePath = `uploads/products/${item.trim()}`;
-        try {
-          if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-            console.log(`Deleted old blog image: ${item.trim()}`);
-          }
-        } catch (error) {
-          console.error(`Error deleting old blog image ${item.trim()}:`, error);
-        }
-      });
+      // oldBlogImage.split(",").forEach(item => {
+      //   const filePath = `uploads/products/${item.trim()}`;
+      //   try {
+      //     if (fs.existsSync(filePath)) {
+      //       fs.unlinkSync(filePath);
+      //       // console.log(`Deleted old blog image: ${item.trim()}`);
+      //     }
+      //   } catch (error) {
+      //     console.error(`Error deleting old blog image ${item.trim()}:`, error);
+      //   }
+      // });
     }
 
     // Update the product object with the new values

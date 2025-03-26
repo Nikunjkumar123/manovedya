@@ -51,8 +51,8 @@ const EditOrder = ({ params }) => {
     // Disable logic for status dropdowns
     if (!orderData) {
         return (
-            <div className="container mt-5">
-                <p>{id ? "Loading order details..." : router.push("/Pages/Login")}</p>
+            <div className="container mt-5" style={{ textAlign: "center" }}>
+                <p>{id ? orderData ? "Loading order details..." : "No order found" : router.push("/Pages/Login")}</p>
             </div>
         );
     }

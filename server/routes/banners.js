@@ -4,6 +4,7 @@ import { authenticateToken, isAdmin } from '../middleware/auth.js';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
+import path from 'path';
 
 
 const storage = multer.diskStorage({
@@ -70,11 +71,14 @@ router.get('/get-single-banner/:id', async (req, res) => {
 // Create new banner (admin only)
 router.post('/create-banners', upload.any('images'), async (req, res) => {
   try {
+    // Destructure the data from the body
     const { name, type, link, startDate, endDate, position, isActive } = req.body;
 
+    // Log request data for debugging
     console.log('Body', req.body);
-    console.log('Images', req.files);
+    console.log('Files', req.files);
 
+    // Check if images are uploaded
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
@@ -82,41 +86,50 @@ router.post('/create-banners', upload.any('images'), async (req, res) => {
       });
     }
 
-    // Ensure 'name', 'type', and 'isActive' are arrays and their lengths match the number of images
-    const images = req.files.map(file => file.filename);
+    // Ensure that we are getting correct data, if it's single object rather than array
+    const bannerData = [];
+    if (Array.isArray(name)) {
+      // If multiple banners are being created, process each banner
+      if (name.length !== req.files.length || type.length !== req.files.length || isActive.length !== req.files.length) {
+        return res.status(400).json({
+          success: false,
+          message: 'Mismatch between the number of images and the provided banner data',
+        });
+      }
 
-    // Check if the lengths of name, type, isActive, and images are the same
-    if (name.length !== images.length || type.length !== images.length || isActive.length !== images.length) {
-      return res.status(400).json({
-        success: false,
-        message: 'Mismatch between number of images and form data',
-      });
-    }
-
-    // Loop through all the data and images and create a banner for each
-    const banners = [];
-    for (let i = 0; i < images.length; i++) {
-      const banner = new Banner({
-        name: name[i],  // Corresponding name for the image
-        type: type[i],  // Corresponding type for the image
-        images: [images[i]],  // We are assuming each image is part of its own banner (single image per banner)
-        link,
+      for (let i = 0; i < req.files.length; i++) {
+        bannerData.push({
+          name: name[i],
+          type: type[i],
+          images: [req.files[i].filename],
+          link: link || '',
+          startDate: startDate || null,
+          endDate: endDate || null,
+          position: position || 0,
+          isActive: isActive[i] === 'true',
+        });
+      }
+    } else {
+      // If only one banner is being created, process the single set of data
+      bannerData.push({
+        name,
+        type,
+        images: [req.files[0].filename],
+        link: link || '',
         startDate: startDate || null,
         endDate: endDate || null,
         position: position || 0,
-        isActive: isActive[i] === 'true',  // Ensure it’s a boolean value
+        isActive: isActive === 'true',
       });
-
-      banners.push(banner);
     }
 
-    // Save all banners in the database
-    await Banner.insertMany(banners);
+    // Save the banner(s) to the database
+    await Banner.insertMany(bannerData);
 
     res.status(201).json({
       success: true,
       message: 'Banners created successfully',
-      banners,
+      banners: bannerData,
     });
   } catch (error) {
     console.error('Create banner error:', error);
@@ -130,19 +143,13 @@ router.post('/create-banners', upload.any('images'), async (req, res) => {
 
 
 
+
+
 // Update banner (admin only)
+
 router.post('/update-banner/:id', upload.any('images'), async (req, res) => {
   try {
-    const {
-      name,
-      type,
-      link,
-      oldImages,
-      startDate,
-      endDate,
-      position,
-      isActive
-    } = req.body;
+    const { name, type, link, oldImages, startDate, endDate, position, isActive } = req.body;
 
     // Find banner by ID
     const banner = await Banner.findById(req.params.id);
@@ -152,42 +159,44 @@ router.post('/update-banner/:id', upload.any('images'), async (req, res) => {
         success: false,
         message: 'Banner not found'
       });
-    }   
-
-    // Process uploaded images
-    let images = banner.images || [];
-    if (req.files && req.files.length > 0) {
-      // If new images are uploaded, map them to the correct path
-      const newImages = req.files.map(file => `/uploads/${file.filename}`);
-      images = [...images, ...newImages];
     }
 
-    // Update fields with new values if provided, otherwise keep the current ones
-    banner.name = name || banner.name;
-    banner.type = type || banner.type;
-    banner.link = link || banner.link; // If link is not provided, retain old link
-    banner.startDate = startDate ? new Date(startDate) : banner.startDate; // Ensure correct date format
-    banner.endDate = endDate ? new Date(endDate) : banner.endDate; // Ensure correct date format
-    banner.position = position || banner.position; // Position can be optional
-    banner.isActive = isActive !== undefined ? isActive === 'true' : banner.isActive;
+    // Initialize an empty array for the new images
+    let images = [];
 
-    // Save the updated banner
-    await banner.save();
+    if (req.files && req.files.length > 0) {
+      // If new images are uploaded, add them to the images array
+      const newImages = req.files.map(file => file.filename);
+      images = [...newImages];
+    }
 
-    // Delete old images if new images are provided
-    if (oldImages && Array.isArray(oldImages)) {
-      oldImages.forEach(image => {
-        const imagePath = path.join(__dirname, `../uploads/banners${image}`);
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath); // Remove old image files
-        }
-      });
+    console.log("New images:", images);
+
+    // Prepare the updated banner data
+    const updatedBannerData = {
+      name: name || banner.name,
+      type: type || banner.type,
+      link: link || banner.link,
+      images: images,
+      startDate: startDate ? new Date(startDate) : banner.startDate,
+      endDate: endDate ? new Date(endDate) : banner.endDate,
+      position: position || banner.position,
+      isActive: isActive !== undefined ? isActive === 'true' : banner.isActive,
+    };
+
+    // Update the banner with the new data
+    const updatedBanner = await Banner.findByIdAndUpdate(req.params.id, updatedBannerData, { new: true });
+    console.log("xxxxxxx2", oldImages)
+    if (oldImages) {
+      if (fs.existsSync(`uploads/banners/${oldImages}`)) {
+        fs.unlinkSync(`uploads/banners/${oldImages}`); 
+      }
     }
 
     res.status(200).json({
       success: true,
       message: 'Banner updated successfully',
-      banner
+      banner: updatedBanner // Send the updated banner back in the response
     });
   } catch (error) {
     console.error('Update banner error:', error);
@@ -198,6 +207,7 @@ router.post('/update-banner/:id', upload.any('images'), async (req, res) => {
     });
   }
 });
+
 
 // Delete banner (admin only)
 router.get('/delete-banner/:id', async (req, res) => {
@@ -231,6 +241,27 @@ router.get('/delete-banner/:id', async (req, res) => {
       message: 'Failed to delete banner',
       error: error.message
     });
+  }
+});
+
+
+
+router.post('/change-status', async (req, res) => {
+  const { bannerId, isActive } = req.body;
+
+  try {
+    const banner = await Banner.findById(bannerId);
+    if (!banner) {
+      return res.status(404).json({ success: false, message: 'Banner not found' });
+    }
+
+    banner.isActive = isActive; // Update the status
+    await banner.save();
+
+    res.status(200).json({ success: true, message: 'Banner status updated successfully' });
+  } catch (error) {
+    console.error('Error updating Banner status:', error);
+    res.status(500).json({ success: false, message: 'Failed to update Banner status' });
   }
 });
 

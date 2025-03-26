@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getData, postData } from "../../services/FetchNodeServices.js";
+import { Autocomplete, TextField } from "@mui/material";
 
 const AddProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -229,21 +230,16 @@ const AddProduct = () => {
             />
           </div>
 
-          <div className="col-md-4">
-            <label className="form-label">Select Herbs</label>
-            <select
-              name="herbsId"
+
+          <div className="col-md-4" style={{ marginTop: '40px' }}>
+            <Autocomplete
               multiple
-              style={{ height: 100 }}
-              className="form-control"
-              value={formData?.herbsId}
-              onChange={handleInputChange}
-            >
-              <option value="">Select Product</option>
-              {herbsList?.map((herbs, idx) => (
-                <option key={idx} value={herbs?._id}>{herbs?.name}</option>
-              ))}
-            </select>
+              options={herbsList}
+              value={herbsList.filter((herbs) => formData.herbsId.includes(herbs._id))}
+              getOptionLabel={(option) => option.name}
+              onChange={(e, newValue) => setFormData(prev => ({ ...prev, herbsId: newValue.map(herbs => herbs._id) }))}
+              renderInput={(params) => <TextField {...params} label="Select Herbs" />}
+            />
           </div>
 
           <div className="col-md-12">

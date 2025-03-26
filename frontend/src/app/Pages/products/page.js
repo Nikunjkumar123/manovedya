@@ -54,10 +54,10 @@ const Page = ({ params }) => {
                       alt={item.name}
                       className="product-image img-fluid" />
                     <div className="product-details">
-                      <h5 className="product-name" style={{height:'5vh'}}>{item?.productName}</h5>
-                      <p className="product-desc" style={{ display: '-webkit-flex', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: ' ellipsis' }} >
+                      <h5 className="product-name" style={{ height: '5vh' }}>{truncateText(item?.productName, 18)}</h5>
+                      <p className="product-desc" style={{ height: '10vh', display: '-webkit-flex', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: ' ellipsis', top: 5 }} >
 
-                        {Parser()?.parse(truncateText(item?.productDescription, 18))}
+                        {Parser()?.parse(truncateText(item?.productSubDescription, 90))}
 
                       </p>
                       <div className="product-footer">

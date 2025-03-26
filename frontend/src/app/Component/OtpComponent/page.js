@@ -77,10 +77,13 @@ const OtpComponent = ({ handleSubmit, formData, title, setOtpForm }) => {
       const response = await postData(`api/users/verify-otp-for-user-signup`, body)
       console.log("response response:=", response)
       if (response.status === true) {
-        toast.success(response?.message);
+        toast.success(response?.message)
+        
         router.push("/Pages/Login")
-        setOtpForm(false)
+          setOtpForm(false)
 
+      } else {
+        toast.error(response?.message);
       }
     }
   };

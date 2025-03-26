@@ -120,11 +120,11 @@ const ConsultDoctor = () => {
                                     <td>{appointment.chooseDoctor}</td>
                                     <td>
                                         <select
-                                        style={{ width: "130px" }}
+                                            style={{ width: "130px" }}
                                             value={appointment.status}
                                             onChange={(e) => handleStatusChange(e, appointment._id)}
                                             className="form-control"
-                                            // disabled={appointment.status === "completed" || appointment.status === "cancelled"}
+                                        // disabled={appointment.status === "completed" || appointment.status === "cancelled"}
                                         >
                                             <option value="pending">Pending</option>
                                             <option value="completed">Completed</option>

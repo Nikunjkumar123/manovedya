@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getData, postData } from "../../services/FetchNodeServices";
 import JoditEditor from "jodit-react";
+import { Autocomplete, TextField } from "@mui/material";
 
 const AddCategory = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -169,24 +170,20 @@ const AddCategory = () => {
               onChange={handleChange}
               required
             />
+            {formData.categoryImage && (
+              < img src={URL.createObjectURL(formData.categoryImage)} alt="Preview" width="100" />
+            )}
           </div>
 
-          <div className="col-md-4">
-            <label htmlFor="selectProduct">Select Product</label>
-            <select
+          <div className="col-md-4" style={{ marginTop: '40px' }}>
+            <Autocomplete
               multiple
-              style={{ height: 100 }}
-              name="productId"
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Select Product</option>
-              {productList?.map((item) => (
-                <option key={item._id} value={item._id}>
-                  {item.productName}
-                </option>
-              ))}
-            </select>
+              options={productList}
+              value={productList.filter((product) => formData.productId.includes(product._id))}
+              getOptionLabel={(option) => option.productName}
+              onChange={(e, newValue) => setFormData(prev => ({ ...prev, productId: newValue.map(product => product._id) }))}
+              renderInput={(params) => <TextField {...params} label="Select Product" />}
+            />
           </div>
 
           <div className="col-md-12">

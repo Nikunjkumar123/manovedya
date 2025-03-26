@@ -72,7 +72,7 @@ const EditBanner = () => {
         submitData.append('name', formData.bannerName);
         if (formData.bannerImage) submitData.append('images', formData.bannerImage);
         submitData.append('type', formData.bannerType);
-        submitData.append('oldImage', formData.oldImage);
+        submitData.append('oldImages', formData.oldImage);
         submitData.append('isActive', formData.bannerStatus ? "true" : "false");
 
         try {
@@ -152,7 +152,7 @@ const EditBanner = () => {
                             <option value="" selected disabled>Select Banner Type</option>
                             <option value="Desktop">Desktop</option>
                             <option value="Mobile">Mobile</option>
-                            <option value="Both">Both</option>
+                            {/* <option value="Both">Both</option> */}
                         </select>
                     </div>
                     <div className="col-12">

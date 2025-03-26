@@ -30,14 +30,15 @@ const page = () => {
 
     try {
       const response = await postData("api/users/user-login", payload);
+      console.log("Login response:", response);
       if (response?.status === true) {
         localStorage.setItem("token", response?.token);
         localStorage.setItem("User_data", JSON.stringify(response?.user));
-        dispatch(login(response?.token))
+        dispatch(login(response?.user))
         router.push("/");
         toast.success("Login successful!");
       } else {
-        toast.error(response?.messag || "Login failed. Please try again.");
+        toast.error(response?.message || "Login failed. Please try again.");
       }
     } catch (error) {
       console.error("Error during login:", error);

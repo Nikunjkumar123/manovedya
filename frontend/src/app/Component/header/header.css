@@ -271,3 +271,35 @@ font-size: 12px;
     width: 80%;
   }
 }
+
+.topNav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f7fc;
+  padding: 20px;
+  height: 100px;
+}
+
+.couponText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  font-size: 18px;
+  font-weight: bold;
+  width: 80%; /* Adjust width as needed */
+  text-align: center;
+}
+
+.slide {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  position: absolute;
+  width: 100%;
+}
+
+.active {
+  opacity: 1;
+}

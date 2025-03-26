@@ -53,6 +53,8 @@ const Header = () => {
             <li><Link to="/view-test" onClick={handletoggleBtn}> <i class="fa-solid fa-tags"></i> Add Mind Health Test</Link></li>
             <li><Link to="/news-letter" onClick={handletoggleBtn}> <i class="fa-solid fa-tags"></i> News Letter</Link></li>
             <li><Link to="/patient-details" onClick={handletoggleBtn}> <i class="fa-solid fa-tags"></i> Consult Patient Details</Link></li>
+            <li><Link to="/all-consult-doctor" onClick={handletoggleBtn}> <i class="fa-solid fa-tags"></i> Manage Consult Advice URL</Link></li>
+            
             <li><Link to="/all-coupen" onClick={handletoggleBtn}> <i class="fa-solid fa-tags"></i> Manage Coupens</Link></li>
             <li><Link to="/sub-diseases" onClick={handletoggleBtn}> <i class="fa-solid fa-tags"></i> Sub Diseases</Link></li>
             <li><Link to="/all-orders" onClick={handletoggleBtn}> <i class="fa-solid fa-truck"></i> Manage Orders</Link></li>

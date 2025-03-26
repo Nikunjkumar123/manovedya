@@ -4,11 +4,27 @@ import axios from "axios";
 import "./slider.css";
 import { getData, serverURL } from "@/app/services/FetchNodeServices";
 import Image from "next/image";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from "react-slick";
 
 const Page = () => {
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0); // Track active index for dots
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -16,7 +32,6 @@ const Page = () => {
         const response = await getData("api/banners");
         console.log("Response:", response?.banners);
 
-        // Check if response is successful and has banners
         if (response?.success === true && response?.banners) {
           setBanners(response?.banners);
         } else {
@@ -36,51 +51,63 @@ const Page = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    cssEase: "linear",
+    beforeChange: (current, next) => setActiveIndex(next), // Update active index before changing slide
+  };
+
   return (
     <div
       id="carouselExampleIndicators"
-      className="carousel slide"
-      data-bs-ride="carousel"
-      data-bs-interval="10000"
+      style={{ zIndex: 6 }}
     >
-      <div className="carousel-indicators">
+      <div className="carousel-indicators" s>
         {banners.map((_, index) => (
           <button
             key={index}
             type="button"
             data-bs-target="#carouselExampleIndicators"
             data-bs-slide-to={index}
-            className={index === 0 ? "active" : ""}
-            aria-current={index === 0 ? "true" : "false"}
+            className={index === activeIndex ? "active" : ""}
+            aria-current={index === activeIndex ? "true" : "false"}
             aria-label={`Slide ${index + 1}`}
+            onClick={() => setActiveIndex(index + 1)}
           ></button>
         ))}
       </div>
 
       <div className="carousel-inner">
-        {banners.map((banner, index) => (
-          <div
-            key={index}
-            className={`carousel-item ${index === 0 ? "active" : ""}`}
-          >
-            <img
-              src={`${serverURL}/uploads/banners/${banner?.images[0]}`}
-              className="desktop-banner"
-              height={500}
-              width={1200}
-              alt={`slide-${index}`}
-            />
-            {/* {banner?.mobile && (
-              <img
-                src={banner?.mobile}
-                className="mobile-banner"
+        <Slider {...settings}>
+          {banners?.filter(banner => (isMobile ? banner?.type === "Mobile" : banner?.type === "Desktop"))?.map((banner, index) => (
+            <div
+              key={index}
+              className={`carousel-item ${index === activeIndex ? "active" : ""}`}
+            >
+              {banner?.type === "Desktop" && <img
+                src={`${serverURL}/uploads/banners/${banner?.images[0]}`}
+                className="desktop-banner"
                 height={500}
                 width={1200}
-                alt={`slide-mobile-${index}`}
-              />
-            )} */}
-          </div>
-        ))}
+                alt={`slide-${index}`}
+              />}
+              {banner?.type === "Mobile" && (
+                <img
+                  src={`${serverURL}/uploads/banners/${banner?.images[0]}`}
+                  className="mobile-banner"
+                  height={500}
+                  width={1200}
+                  alt={`slide-mobile-${index}`}
+                />
+              )}
+            </div>
+          ))}
+        </Slider>
       </div>
 
       <button

@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getData, postData } from "../../services/FetchNodeServices.js";
+import { Autocomplete, TextField } from "@mui/material";
 
 const EditProduct = () => {
     const { id } = useParams(); // Get product ID from URL
@@ -35,31 +36,18 @@ const EditProduct = () => {
                 const productData = productResponse?.product;
 
                 if (productResponse?.success) {
-                    console.log("Product Data:", productData);
+                    // console.log("Product Data:", productData);
                     setFormData({
                         ...productData,
-                        productName: productData?.productName || "", // Fallback to empty string if undefined or null
-                        productSubDescription: productData?.productSubDescription || "", // Similarly, fallback to empty string
-                        productDescription: productData?.productDescription || "", // Use empty string as fallback
-                        Variant: productData?.variant?.length > 0 ? productData?.variant.map(v => ({
-                            ...v, // You can modify this mapping if you want to alter data in some way
-                            price: v?.price || 0,  // For example, setting default values if properties don't exist
-                            discountPrice: v?.discountPrice || 0,
-                            finalPrice: v?.finalPrice || 0,
-                            day: v?.day || "",
-                            bottle: v?.bottle || "",
-                            tex: v?.tex || "0",
-                        })) : [],  // Ensure Variant is an array and map over it if exists
-                        oldProductImage: productData?.productImages?.length > 0 ? productData?.productImages : [], // Ensure it's an array
-                        oldBlogImage: productData?.blogImages?.length > 0 ? productData?.blogImages : [], // Ensure it's an array
-                        faqs: productData?.faqs?.length > 0 ? productData?.faqs.map(faq => ({
-                            question: faq?.question || "", // Set default values if properties don't exist
-                            answer: faq?.answer || "",
-                        })) : [], // Ensure faqs is an array and map over it if exists
-                        urls: productData?.urls?.length > 0 ? productData?.urls.map(url => ({
-                            url: url?.url || "", // Set default values if URL doesn't exist
-                        })) : [], // Ensure urls is an array and map over it if exists
-                        herbsId: productData?.herbsId?.length > 0 ? productData?.herbsId : [] // Ensure herbsId is an array
+                        productName: productData?.productName || "",
+                        productSubDescription: productData?.productSubDescription || "",
+                        productDescription: productData?.productDescription || "",
+                        Variant: productData?.variant?.length > 0 ? productData?.variant.map(v => ({ ...v, price: v?.price || 0, discountPrice: v?.discountPrice || 0, finalPrice: v?.finalPrice || 0, day: v?.day || "", bottle: v?.bottle || "", tex: v?.tex || "0", })) : [],
+                        oldProductImage: productData?.productImages?.length > 0 ? productData?.productImages : [],
+                        oldBlogImage: productData?.blogImages?.length > 0 ? productData?.blogImages : [],
+                        faqs: productData?.faqs?.length > 0 ? productData?.faqs.map(faq => ({ question: faq?.question || "", answer: faq?.answer || "", })) : [],
+                        urls: productData?.urls?.length > 0 ? productData?.urls.map(url => ({ url: url?.url || "", })) : [],
+                        herbsId: productData?.herbsId?.length > 0 ? productData?.herbsId.map(h => h?._id) : []
                     });
                 } else {
                     toast.error("Error fetching product details.");
@@ -73,7 +61,7 @@ const EditProduct = () => {
         fetchData();
     }, [id]);
 
-console.log("XXXXXXXX",formData)
+
     useEffect(() => {
         const fetchProducts = async () => {
             setIsLoading(true);
@@ -94,11 +82,11 @@ console.log("XXXXXXXX",formData)
         fetchProducts();
     }, []);
 
-    const handleInputChange = (e) => {
-        const { options } = e.target;
-        const selectedHerbs = Array.from(options).filter(option => option.selected).map(option => option.value);
-        setFormData({ ...formData, herbsId: selectedHerbs });
-    };
+    // const handleInputChange = (e) => {
+    //     const { options } = e.target;
+    //     const selectedHerbs = Array.from(options).filter(option => option.selected).map(option => option.value);
+    //     setFormData({ ...formData, herbsId: selectedHerbs });
+    // };
 
     const handleInputFaqChange = (index, field, value) => {
         const newfaqs = [...formData?.faqs];
@@ -129,20 +117,48 @@ console.log("XXXXXXXX",formData)
     //     setFormData((prevFormData) => ({ ...prevFormData, [name]: newValue }));
     // };
 
-    const handleVariantChange = (index, e) => {
-        const { name, value } = e.target;
-        const updatedVariants = [...formData.Variant];
-        updatedVariants[index][name] = value;
+    // const handleVariantChange = (index, e) => {
+    //     const { name, value } = e.target;
+    //     const updatedVariants = [...formData.Variant];
+    //     updatedVariants[index][name] = value;
 
+    //     if (name === "price" || name === "discountPrice") {
+    //         const price = parseFloat(updatedVariants[index].price) || 0;
+    //         const discount = parseFloat(updatedVariants[index].discountPrice) || 0;
+    //         updatedVariants[index].finalPrice = price - (price * discount) / 100;
+    //     }
+
+    //     setFormData({ ...formData, Variant: updatedVariants });
+    // };
+
+
+    const handleVariantChange = (index, event) => {
+        const { name, value } = event.target;
+        const updatedVariants = [...formData.Variant];
+
+        // If the field is price or discountPrice, calculate the finalPrice.
         if (name === "price" || name === "discountPrice") {
-            const price = parseFloat(updatedVariants[index].price) || 0;
-            const discount = parseFloat(updatedVariants[index].discountPrice) || 0;
-            updatedVariants[index].finalPrice = price - (price * discount) / 100;
+            const price = name === "price" ? value : updatedVariants[index].price;
+            const discountPrice = name === "discountPrice" ? value : updatedVariants[index].discountPrice;
+
+            const finalPrice = price - (price * (discountPrice / 100));
+
+            updatedVariants[index] = {
+                ...updatedVariants[index],
+                [name]: value,
+                finalPrice: finalPrice.toFixed(2) // rounding to two decimal points
+            };
+        } else {
+            updatedVariants[index] = {
+                ...updatedVariants[index],
+                [name]: value
+            };
         }
 
         setFormData({ ...formData, Variant: updatedVariants });
     };
 
+    console.log("XXXXXXXXdd", formData.Variant)
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -156,22 +172,16 @@ console.log("XXXXXXXX",formData)
 
         const form = new FormData();
 
-        // Loop through formData and append data accordingly
         Object.keys(formData).forEach((key) => {
             if (key === "Variant" || key === "herbsId" || key === "faqs" || key === "urls") {
-                // For objects or arrays (like Variant, herbsId, etc.), we need to stringify them
-                form.append(key, JSON.stringify(formData[key]));
+                form.append(key, JSON.stringify(formData[key]))
             } else if (key === "productImage") {
-                // For productImage, append each file separately under the 'productImages' field
                 formData.productImage.forEach((file) => form.append("productImages", file));
             } else if (key === "blogImage") {
-                // For blogImage, append each file separately under the 'blogImages' field
                 formData.blogImage.forEach((file) => form.append("blogImages", file));
             } else if (key === "oldBlogImage") {
-                // For blogImage, append each file separately under the 'blogImages' field
                 formData?.oldBlogImage?.forEach((file) => form?.append("oldBlogImages", file));
             } else if (key === "oldProductImage") {
-                // For blogImage, append each file separately under the 'blogImages' field
                 formData.oldProductImage.forEach((file) => form.append("oldProductImages", file));
             } {
 
@@ -180,13 +190,12 @@ console.log("XXXXXXXX",formData)
         });
 
         try {
-            // Send the form to the backend with multipart/form-data
-            const response = await postData(`api/products/update-product/${id}`, form, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            const response = await postData(`api/products/update-product/${id}`, form, { headers: { "Content-Type": "multipart/form-data" }, });
+            console.log("responseresponse", response)
             if (response.success === true) {
                 toast.success("Product Update successfully!");
-                navigate("/all-products"); // Uncomment if you want to redirect after success
+
+                navigate("/all-products");
             }
 
         } catch (error) {
@@ -236,7 +245,7 @@ console.log("XXXXXXXX",formData)
         const updatedUrls = formData.urls.filter((_, i) => i !== index);
         setFormData({ ...formData, urls: updatedUrls });
     };
-    console.log("XXXXXXXX", formData)
+    // console.log("XXXXXXXX", formData)
     return (
         <>
             <ToastContainer />
@@ -273,35 +282,18 @@ console.log("XXXXXXXX",formData)
                         <label htmlFor="productName" className="form-label">
                             Product Name<sup className="text-danger">*</sup>
                         </label>
-                        <input
-                            type="text"
-                            name="productName"
-                            className="form-control"
-                            id="productName"
-                            value={formData.productName}
-                            onChange={handleChange}
-                            required
-                            placeholder="Product Name"
+                        <input type="text" name="productName" className="form-control" id="productName" value={formData.productName} onChange={handleChange} required placeholder="Product Name" />
+                    </div>
+                    <div className="col-md-4" style={{ marginTop: '40px' }}>
+                        <Autocomplete
+                            multiple
+                            options={herbsList}
+                            value={herbsList.filter((herbs) => formData.herbsId.includes(herbs._id))}
+                            getOptionLabel={(option) => option.name}
+                            onChange={(e, newValue) => setFormData(prev => ({ ...prev, herbsId: newValue.map(herbs => herbs._id) }))}
+                            renderInput={(params) => <TextField {...params} label="Select Herbs" />}
                         />
                     </div>
-
-                    <div className="col-md-4">
-                        <label className="form-label">Select Herbs</label>
-                        <select
-                            name="herbsId"
-                            multiple
-                            style={{ height: 100 }}
-                            className="form-control"
-                            value={formData?.herbsId}
-                            onChange={handleInputChange}
-                        >
-                            <option value="">Select Product</option>
-                            {herbsList?.map((herbs, idx) => (
-                                <option key={idx} value={herbs?._id}>{herbs?.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
                     {/* Product Sub Description */}
                     <div className="col-md-12">
                         <label htmlFor="productSubDescription" className="form-label">

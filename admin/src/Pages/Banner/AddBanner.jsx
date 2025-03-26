@@ -26,7 +26,6 @@ const AddBanner = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-
     // Create new banners objects based on files and formData
     const newBanners = files.map((file) => ({
       ...formData,
@@ -125,12 +124,12 @@ const AddBanner = () => {
               </option>
               <option value="Desktop">Desktop</option>
               <option value="Mobile">Mobile</option>
-              <option value="Both">Both</option>
+              {/* <option value="Both">Both</option> */}
             </select>
           </div>
           <div className="col-md-6">
             <label htmlFor="bannerImage" className="form-label">
-              Shop Banner Images (Multiple)
+              Shop Banner Images 
             </label>
             <input
               type="file"
@@ -138,7 +137,7 @@ const AddBanner = () => {
               className="form-control"
               id="bannerImage"
               onChange={handleImageChange}
-              multiple
+              // multiple
               required
             />
           </div>

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
 import "./newslater.css";
@@ -12,38 +12,63 @@ const Page = () => {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
+  // Validate email format
+  const isValidEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return regex.test(email);
+  };
+
+  // Validate phone number format (assuming a 10-digit phone number)
+  const isValidPhone = (phone) => {
+    const regex = /^[0-9]{10}$/;
+    return regex.test(phone);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate inputs (basic validation)
+    // Basic validation
     if (!email || !phone || !name) {
-      setError("All fields are required");
+      toast.error("All fields are required.");
       return;
     }
+
+    // Email validation
+    if (!isValidEmail(email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    // Phone validation
+    if (!isValidPhone(phone)) {
+      toast.error("Please enter a valid phone number (10 digits).");
+      return;
+    }
+
+    // Name length check
+    if (name.length < 3) {
+      toast.error("Please enter a valid name with at least 3 characters.");
+      return;
+    }
+
     // Prepare the payload
-    const payload = { email, phone, name }
+    const payload = { email, phone, name };
 
     try {
-
       const response = await postData("api/newsletter/create-newsletter", payload);
-
-      console.log("response", response)
 
       if (response.success === true) {
         // Handle success
-        // alert("Subscription successful!");
-        toast.success("Subscription successful!")
+        toast.success("Subscription successful!");
         setEmail(""); // Reset form fields
         setPhone("");
         setName("");
-        // setError("");
       } else {
-        toast.error("Something went wrong, please try again.")
+        toast.error(response?.error || "Something went wrong, please try again.");
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      setError("Failed to submit the form. Please try again later.");
+      toast.error("Failed to submit the form. Please try again later.");
     }
   };
 
@@ -63,6 +88,7 @@ const Page = () => {
               <div className="newslater-input-field">
                 <input
                   type="email"
+                  required
                   className="form-control"
                   placeholder="Enter Email Address"
                   value={email}
@@ -91,9 +117,6 @@ const Page = () => {
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-
-              {/* Error message */}
-              {/* {error && <p className="error-text">{error}</p>} */}
 
               {/* Submit button */}
               <div className="text-center">

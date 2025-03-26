@@ -72,6 +72,9 @@ import ResultsPage from '../../Pages/TestPageDommy/ResultsPage'
 import AddCoupen from '../../Pages/Coupen/AddCoupen'
 import AllCoupen from '../../Pages/Coupen/AllCoupen'
 import EditCoupen from '../../Pages/Coupen/EditCoupen'
+import AllConsultDoctor from '../../Pages/ManagConsult/AllConsultDoctor'
+import AddConsultDoctor from '../../Pages/ManagConsult/AddConsultDoctor'
+import EditConsultDoctor from '../../Pages/ManagConsult/EditConsultDoctor'
 
 const Home = () => {
 
@@ -90,7 +93,12 @@ const Home = () => {
 
 
                 <Route path={"/news-letter"} element={<NewsLetterForm />} />
+
+                {/* Consult Doctor */}
                 <Route path={"/patient-details"} element={<ConsultDoctor />} />
+                <Route path={"/all-consult-doctor"} element={<AllConsultDoctor />} />
+                <Route path={"/add-consult-doctor"} element={<AddConsultDoctor />} />
+                <Route path={"/edit-consult-doctor/:id"} element={<EditConsultDoctor />} />
 
                 {/* subCategory  */}
                 <Route path={"/sub-diseases"} element={<SubDieses />} />

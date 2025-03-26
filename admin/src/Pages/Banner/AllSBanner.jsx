@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getData, serverURL } from '../../services/FetchNodeServices';
+import { getData, postData, serverURL } from '../../services/FetchNodeServices';
 
 const AllSBanner = () => {
     const [banners, setBanners] = useState([]);
@@ -15,15 +15,15 @@ const AllSBanner = () => {
             try {
                 setIsLoading(true);
                 const response = await getData('api/banners');
-                console.log("REASPONSE ALL BANNER",response)
+                console.log("REASPONSE ALL BANNER", response)
                 if (response?.success === true) {
                     setBanners(response?.banners);
                 } else {
                     toast.error("Failed to load banners");
                 }
             } catch (error) {
-                console.log('error',error)
-                toast.error("An error occurred while fetching banners:-",error);
+                console.log('error', error)
+                toast.error("An error occurred while fetching banners:-", error);
             } finally {
                 setIsLoading(false);
             }
@@ -45,20 +45,48 @@ const AllSBanner = () => {
             });
 
             if (result.isConfirmed) {
-               const data=  await getData(`api/banners/delete-banner/${id}`);
-               console.log("REASPONSE ALL BANNER",data)
-               if(data?.success===true){
-                setBanners(banners.filter(banner => banner?._id !== id));
-                toast.success("Banner deleted successfully");
-               }else{
-                toast.error("Banner deleted Failed");
-               }
-               
+                const data = await getData(`api/banners/delete-banner/${id}`);
+                console.log("REASPONSE ALL BANNER", data)
+                if (data?.success === true) {
+                    setBanners(banners.filter(banner => banner?._id !== id));
+                    toast.success("Banner deleted successfully");
+                } else {
+                    toast.error("Banner deleted Failed");
+                }
+
             }
         } catch (error) {
             toast.error("Failed to delete the banner");
         }
     };
+
+
+    const handleCheckboxChange = async (e, bannerId) => {
+        const updatedStatus = e.target.checked;
+
+        try {
+            const response = await postData('api/banners/change-status', {
+                bannerId: bannerId,
+                isActive: updatedStatus
+            });
+
+            if (response.success === true) {
+                const updatedProducts = banners.map(banner => {
+                    if (banner._id === bannerId) {
+                        return { ...banner, isActive: updatedStatus };
+                    }
+                    return banner;
+                });
+                setBanners(updatedProducts);
+                toast.success('Banner status updated successfully');
+            }
+        } catch (error) {
+            toast.error("Error updating Banner status");
+            console.error("Error updating Banner status:", error);
+        }
+    };
+
+
 
     return (
         <>
@@ -115,9 +143,9 @@ const AllSBanner = () => {
                                     <td>
                                         <input
                                             type="checkbox"
-                                            readOnly
                                             checked={banner?.isActive}
-                                        /> 
+                                            onChange={(e) => handleCheckboxChange(e, banner?._id)}
+                                        />
                                     </td>
                                     <td>
                                         <Link to={`/edit-banner/${banner?._id}`} className="bt edit">

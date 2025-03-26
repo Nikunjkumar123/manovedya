@@ -4,6 +4,7 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import Categorie from '../models/Categories.js';
+import path from 'path';
 
 // Configure Multer for image uploads
 const storage = multer.diskStorage({
@@ -143,14 +144,14 @@ router.post('/create-category', upload.single('categoryImage'), async (req, res)
     });
   }
 });
- 
+
 
 // Update category (admin only)
 router.post('/update-category/:id', upload.single('categoryImage'), async (req, res) => {
   try {
-    const { categoryName, description, shortDescription, categoryStatus, productId, position } = req.body;
-    // console.log("XXXXXXX", req.body)
-    // Ensure categoryName is provided and not empty or null
+    const { categoryName, description, shortDescription, oldImage, categoryStatus, productId, position } = req.body;
+    console.log("CCCCC", req?.body);
+
     if (!categoryName || categoryName.trim() === '') {
       return res.status(400).json({
         success: false,
@@ -158,7 +159,6 @@ router.post('/update-category/:id', upload.single('categoryImage'), async (req, 
       });
     }
 
-    // Find category
     const category = await Categorie.findById(req.params.id);
 
     if (!category) {
@@ -171,18 +171,28 @@ router.post('/update-category/:id', upload.single('categoryImage'), async (req, 
     // Handle image upload
     let image = category.image;
     if (req.file) {
-      // Delete old image file if a new one is uploaded
-      if (image) {
-        fs.unlinkSync(`./uploads/categorys/${image}`);
+      if (image !== oldImage) {
+        const imagePath = `./uploads/categorys/${image}`;
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        } else {
+          console.warn('Old image not found, skipping deletion:', imagePath);
+        }
       }
       image = req.file.filename;
+    }
+
+    // Safely handle productId
+    let parsedProductId = [];
+    if (productId) {
+      parsedProductId = productId.split(',').map((id) => id.trim()); // Convert string to array of IDs
     }
 
     // Update category fields
     category.categoryName = categoryName || category.categoryName;
     category.description = description || category.description;
     category.shortDescription = shortDescription || category.shortDescription;
-    category.productId = productId || category.productId;
+    category.productId = parsedProductId || category.productId;
     category.image = image;
     category.position = position !== undefined ? position : category.position;
     category.isActive = categoryStatus === 'true' || categoryStatus === true ? true : false;
@@ -204,6 +214,8 @@ router.post('/update-category/:id', upload.single('categoryImage'), async (req, 
     });
   }
 });
+
+
 
 
 // Delete category (admin only)

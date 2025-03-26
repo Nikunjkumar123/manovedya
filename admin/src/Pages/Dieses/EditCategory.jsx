@@ -3,8 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getData, postData } from "../../services/FetchNodeServices";
+import { getData, postData, serverURL } from "../../services/FetchNodeServices";
 import JoditEditor from "jodit-react";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { Autocomplete, TextField } from "@mui/material";
 
 const EditCategory = () => {
   const { id } = useParams();
@@ -15,26 +18,26 @@ const EditCategory = () => {
     categoryStatus: false,
     shortDescription: "",
     description: "",
-    productId: ""
+    productId: []
   });
   const [btnLoading, setBtnLoading] = useState(false);
   const [productList, setProductList] = useState([]);
+  const [oldImage, setOldImage] = useState(null);
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
         const response = await getData(`api/categories/get-category-by-id/${id}`);
-        console.log(response);
         if (response?.success) {
           setFormData({
-            ...response?.category,
             categoryName: response?.category?.categoryName,
             shortDescription: response?.category?.shortDescription,
             description: response?.category?.description,
-            productId: response?.category?.productId,
+            productId: response?.category?.productId?.map((product) => product._id) || [],
             categoryStatus: response?.category?.isActive,
-            categoryImage: response?.category?.image || null // Ensuring the image is populated if available
+            categoryImage: response?.category?.image || null,
           });
+          setOldImage(response?.category?.image || null);
         }
       } catch (error) {
         toast.error("Error fetching category data");
@@ -42,17 +45,17 @@ const EditCategory = () => {
       }
     };
 
+
     const fetchProducts = async () => {
       setBtnLoading(true);
       try {
         const response = await getData("api/products/all-product");
-        console.log("response", response);
         if (response.success) {
           setProductList(response?.products || []);
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
         toast.error("Failed to fetch products!");
+        console.error("Error fetching products:", error);
       } finally {
         setBtnLoading(false);
       }
@@ -84,21 +87,23 @@ const EditCategory = () => {
     const payload = new FormData();
     payload.append("categoryName", formData.categoryName);
     if (formData.categoryImage) {
-      payload.append("categoryImage", formData.categoryImage); // Ensure correct field name in backend
+      payload.append("categoryImage", formData.categoryImage);
     }
     payload.append("categoryStatus", formData.categoryStatus ? "True" : "False");
     payload.append("shortDescription", formData.shortDescription);
     payload.append("description", formData.description);
-    payload.append("productId", formData.productId);
+    payload.append("productId", formData?.productId);
+
+    if (oldImage) {
+      payload.append("oldImage", oldImage);
+    }
 
     try {
       const response = await postData(`api/categories/update-category/${id}`, payload);
-      console.log(response)
       if (response?.success === true) {
         toast.success(response.message);
         navigate("/all-dieses");
       }
-
     } catch (error) {
       toast.error(error.response?.data?.message || "Error updating category");
       console.error("Error updating category:", error);
@@ -106,6 +111,8 @@ const EditCategory = () => {
       setBtnLoading(false);
     }
   };
+
+  console.log("fromData", formData)
 
   return (
     <>
@@ -149,24 +156,20 @@ const EditCategory = () => {
               id="categoryImage"
               onChange={handleChange}
             />
+            {oldImage && (
+              <img src={`${serverURL}/uploads/categorys/${oldImage}`} alt="old category" width="100" />
+            )}
           </div>
 
-          <div className="col-md-4">
-            <label htmlFor="selectProduct">Select Product</label>
-            <select
+          <div className="col-md-4" style={{ marginTop: '40px' }}>
+            <Autocomplete
               multiple
-              name="productId"
-              value={formData.productId}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option>Select Product</option>
-              {productList.map((item) => (
-                <option key={item._id} value={item._id}>
-                  {item.productName}
-                </option>
-              ))}
-            </select>
+              options={productList}
+              value={productList.filter((product) => formData.productId.includes(product._id))}
+              getOptionLabel={(option) => option.productName}
+              onChange={(e, newValue) => setFormData(prev => ({ ...prev, productId: newValue.map(product => product._id) }))}
+              renderInput={(params) => <TextField {...params} label="Select Product" />}
+            />
           </div>
 
           <div className="col-md-12">

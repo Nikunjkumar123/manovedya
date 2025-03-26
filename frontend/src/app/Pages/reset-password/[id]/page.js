@@ -20,16 +20,19 @@ const ResetPassword = ({ params }) => {
         e.preventDefault();
         const { password, confirmPassword } = formData;
         if (!password || !confirmPassword) {
-            setError("Both password fields are required.");
+            // setError("Both password fields are required.");
+            toast.error("Both password fields are required.");
             return;
         }
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+            // setError("Passwords do not match.");
+            toast.error("Passwords do not match.");
             return;
         }
         if (password.length < 4) {
-            setError("Password must be at least 4 characters long.");
+            toast.error("Password must be at least 4 characters long.");
+            // setError("Password must be at least 4 characters long.");
             return;
         }
 

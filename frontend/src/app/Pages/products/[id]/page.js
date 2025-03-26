@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, use } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { IoInformationCircleOutline } from "react-icons/io5";
 import Slider from "react-slick";
 import "../../products/products.css";
 import '../../productDetails/productDetails.css'
@@ -329,9 +330,56 @@ const Page = ({ params }) => {
           <div className="row">
             {product?.herbsId?.map((item, index) => (
               <div key={index} className="col-md-4 col-6">
-                <div className="ingredent-main">
+                <div className="ingredent-main" style={{ position: "relative" }}>
                   <img src={`${serverURL}/uploads/herbs/${item?.images[0]}`} alt="ingredents-image" />
                   <p>{item?.name}</p>
+                  <div
+                    data-bs-toggle="modal"
+                    data-bs-target={`#modal-${index}`} // Unique ID for each modal
+                    style={{
+                      position: 'absolute',
+                      top: '5px',
+                      right: '5px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <IoInformationCircleOutline size="20px" />
+                  </div>
+                </div>
+
+                {/* Modal for each item */}
+                <div
+                  className="modal fade"
+                  id={`modal-${index}`} // Unique modal ID
+                  aria-hidden="true"
+                  aria-labelledby={`modal-${index}-label`} // Unique label ID
+                  tabIndex="-1"
+                >
+                  <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h1 className="modal-title fs-5" id={`modal-${index}-label`}>
+                          {item?.name}
+                        </h1>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div className="modal-body">
+                        <div className="d-flex justify-content-center align-items-center mb-3">
+                          <img
+                            src={`${serverURL}/uploads/herbs/${item?.images[0]}`}
+                            alt="ingredents-image"
+                            style={{ maxWidth: '100%', maxHeight: '250px' }}
+                          />
+                        </div>
+                        <div>{Parser()?.parse(item?.content)}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
