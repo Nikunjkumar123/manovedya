@@ -22,19 +22,33 @@ import "../../Component/Hero/hero.css";
 import reviewImage from "../../Images/reviewImage1.png";
 import { useRazorpay } from "react-razorpay";
 import Swal from "sweetalert2";
-import { postData } from "@/app/services/FetchNodeServices";
+import { getData, postData } from "@/app/services/FetchNodeServices";
 import { useRouter } from "next/navigation";
 
 const page = () => {
   const { error, isLoading, Razorpay } = useRazorpay();
   const [formData, setFormData] = useState({})
   const [user_data, setUser_data] = useState(null)
+  const [urls, setUrls] = useState([])
   const router = useRouter();
 
 
   useEffect(() => {
     const user_data = JSON.parse(localStorage.getItem("User_data"))
     setUser_data(user_data)
+  }, [])
+
+  const fetchDoctorAdvice = async () => {
+    const response = await getData('api/url/get-All-url');
+    // console.log("Fetched Consultations:", response.consultations.filter(url => url?.isActive === true));
+    if (response.status === true) {
+      const data = response.consultations.filter(url => url?.isActive === true)
+      // console.log("FetchedConsultations:", response?.consultations);
+      setUrls(data);
+    }
+  }
+  useEffect(() => {
+    fetchDoctorAdvice()
   }, [])
 
   const data = [
@@ -491,13 +505,13 @@ const page = () => {
         <div className="container">
           <h2>Doctor's Advice</h2>
           <div className="row">
-            {videos.map((video) => (
+            {urls.map((video) => (
               <div className="col-md-4 col-6" key={video.id}>
                 <div className="video-card">
                   <iframe
                     width="100%"
                     height="250"
-                    src={video.url}
+                    src={video.urls}
                     title={video.title}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
