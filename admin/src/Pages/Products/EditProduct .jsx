@@ -82,12 +82,6 @@ const EditProduct = () => {
         fetchProducts();
     }, []);
 
-    // const handleInputChange = (e) => {
-    //     const { options } = e.target;
-    //     const selectedHerbs = Array.from(options).filter(option => option.selected).map(option => option.value);
-    //     setFormData({ ...formData, herbsId: selectedHerbs });
-    // };
-
     const handleInputFaqChange = (index, field, value) => {
         const newfaqs = [...formData?.faqs];
         newfaqs[index][field] = value;
@@ -112,47 +106,19 @@ const EditProduct = () => {
     const handleJoditChange = (newValue, name) => {
         setFormData((prevFormData) => ({ ...prevFormData, [name]: newValue }));
     };
-
-    // const handleJoditShortChange = (newValue, name) => {
-    //     setFormData((prevFormData) => ({ ...prevFormData, [name]: newValue }));
-    // };
-
-    // const handleVariantChange = (index, e) => {
-    //     const { name, value } = e.target;
-    //     const updatedVariants = [...formData.Variant];
-    //     updatedVariants[index][name] = value;
-
-    //     if (name === "price" || name === "discountPrice") {
-    //         const price = parseFloat(updatedVariants[index].price) || 0;
-    //         const discount = parseFloat(updatedVariants[index].discountPrice) || 0;
-    //         updatedVariants[index].finalPrice = price - (price * discount) / 100;
-    //     }
-
-    //     setFormData({ ...formData, Variant: updatedVariants });
-    // };
-
-
     const handleVariantChange = (index, event) => {
         const { name, value } = event.target;
         const updatedVariants = [...formData.Variant];
 
-        // If the field is price or discountPrice, calculate the finalPrice.
         if (name === "price" || name === "discountPrice") {
             const price = name === "price" ? value : updatedVariants[index].price;
             const discountPrice = name === "discountPrice" ? value : updatedVariants[index].discountPrice;
 
             const finalPrice = price - (price * (discountPrice / 100));
 
-            updatedVariants[index] = {
-                ...updatedVariants[index],
-                [name]: value,
-                finalPrice: finalPrice.toFixed(2) // rounding to two decimal points
-            };
+            updatedVariants[index] = { ...updatedVariants[index], [name]: value, finalPrice: finalPrice.toFixed(2) };
         } else {
-            updatedVariants[index] = {
-                ...updatedVariants[index],
-                [name]: value
-            };
+            updatedVariants[index] = { ...updatedVariants[index], [name]: value };
         }
 
         setFormData({ ...formData, Variant: updatedVariants });
@@ -171,10 +137,9 @@ const EditProduct = () => {
         }
 
         const form = new FormData();
-
         Object.keys(formData).forEach((key) => {
             if (key === "Variant" || key === "herbsId" || key === "faqs" || key === "urls") {
-                form.append(key, JSON.stringify(formData[key]))
+                form.append(key, JSON.stringify(formData[key]));
             } else if (key === "productImage") {
                 formData.productImage.forEach((file) => form.append("productImages", file));
             } else if (key === "blogImage") {
@@ -183,14 +148,14 @@ const EditProduct = () => {
                 formData?.oldBlogImage?.forEach((file) => form?.append("oldBlogImages", file));
             } else if (key === "oldProductImage") {
                 formData.oldProductImage.forEach((file) => form.append("oldProductImages", file));
-            } {
-
+            } else {
                 form.append(key, formData[key]);
             }
         });
 
+
         try {
-            const response = await postData(`api/products/update-product/${id}`, form, { headers: { "Content-Type": "multipart/form-data" }, });
+            const response = await postData(`api/products/update-product/${id}`, form);
             console.log("responseresponse", response)
             if (response.success === true) {
                 toast.success("Product Update successfully!");
@@ -245,7 +210,7 @@ const EditProduct = () => {
         const updatedUrls = formData.urls.filter((_, i) => i !== index);
         setFormData({ ...formData, urls: updatedUrls });
     };
-    // console.log("XXXXXXXX", formData)
+    console.log("XXXXXXXX", formData)
     return (
         <>
             <ToastContainer />
@@ -267,14 +232,7 @@ const EditProduct = () => {
                         <label htmlFor="productImage" className="form-label">
                             Product Image<sup className="text-danger">*</sup>
                         </label>
-                        <input
-                            type="file"
-                            name="productImage"
-                            className="form-control"
-                            id="productImage"
-                            multiple
-                            onChange={handleFileChange}
-                        />
+                        <input type="file" name="productImage" className="form-control" id="productImage" multiple onChange={handleFileChange} />
                     </div>
 
                     {/* Product Name */}
@@ -309,13 +267,6 @@ const EditProduct = () => {
                             onChange={handleChange}
                             required
                         />
-                        {/* <JoditEditor
-                            className="form-control"
-                            placeholder="product Sub Description"
-                            name="productSubDescription"
-                            value={formData.productSubDescription}
-                            onChange={(newValue) => handleJoditShortChange(newValue, 'productSubDescription')}
-                        /> */}
                     </div>
 
                     {/* Product Description (Jodit Editor) */}
@@ -341,15 +292,7 @@ const EditProduct = () => {
                                     <label className="form-label">
                                         Price<sup className="text-danger">*</sup>
                                     </label>
-                                    <input
-                                        type="number"
-                                        name="price"
-                                        className="form-control"
-                                        value={variant.price}
-                                        onChange={(e) => handleVariantChange(index, e)}
-                                        required
-                                        placeholder="Price"
-                                    />
+                                    <input type="number" name="price" className="form-control" value={variant.price} onChange={(e) => handleVariantChange(index, e)} required placeholder="Price" />
                                 </div>
 
                                 {/* Discount Percentage */}
@@ -357,15 +300,7 @@ const EditProduct = () => {
                                     <label className="form-label">
                                         Discount %<sup className="text-danger">*</sup>
                                     </label>
-                                    <input
-                                        type="number"
-                                        name="discountPrice"
-                                        className="form-control"
-                                        value={variant.discountPrice}
-                                        onChange={(e) => handleVariantChange(index, e)}
-                                        required
-                                        placeholder="Discount %"
-                                    />
+                                    <input type="number" name="discountPrice" className="form-control" value={variant.discountPrice} onChange={(e) => handleVariantChange(index, e)} required placeholder="Discount %" />
                                 </div>
 
                                 {/* Final Price */}
@@ -373,14 +308,7 @@ const EditProduct = () => {
                                     <label className="form-label">
                                         Final Price<sup className="text-danger">*</sup>
                                     </label>
-                                    <input
-                                        type="number"
-                                        name="finalPrice"
-                                        className="form-control"
-                                        value={variant?.finalPrice}
-                                        readOnly
-                                        placeholder="Final Price"
-                                    />
+                                    <input type="number" name="finalPrice" className="form-control" value={variant?.finalPrice} readOnly placeholder="Final Price" />
                                 </div>
 
                                 {/* Select Day */}
@@ -492,13 +420,7 @@ const EditProduct = () => {
                         <h2>Add Blog Images</h2>
                         <div className="row">
                             <div className="col-md-6">
-                                <input
-                                    type="file"
-                                    className="form-control"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={handleImageChange}
-                                />
+                                <input type="file" className="form-control" accept="image/*" multiple onChange={handleImageChange} />
                                 <small className="text-muted">Select up to 4 images.</small>
                             </div>
                         </div>

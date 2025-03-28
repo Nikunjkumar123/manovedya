@@ -273,8 +273,8 @@ router.post('/update-product/:id', upload.fields([{ name: 'productImages', maxCo
       herbsId,
     } = req.body;
 
-    console.log("Incoming Data:", req.body);
-    console.log("Received files:", req?.files);
+    // console.log("Incoming Data:", req.body);
+    // console.log("Received files:", req?.files);
 
     // Safe JSON parsing with error handling
     const parseJson = (jsonString) => {
